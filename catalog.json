@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-12T23:21:04.763402Z",
+  "packages": [
+    {
+      "manifest": {
+        "schemaVersion": 2,
+        "capabilityApi": {
+          "major": 1,
+          "minor": 14
+        },
+        "builtAgainst": {
+          "engineVersion": "2.5.0",
+          "engineCommit": "7e28236962a000719dddc13f7fa2630f88b51816"
+        },
+        "id": "personal-character-memory-v4-1",
+        "name": "Personal Keeper v4.1 — Native Pilot",
+        "version": "4.1.0",
+        "description": "Bounded model deltas merged into one validated character checkpoint. Local tests only; live host/model validation pending.",
+        "engine": {
+          "min": "2.5.0",
+          "maxExclusive": "2.5.1"
+        },
+        "kind": [
+          "agent"
+        ],
+        "entrypoints": {
+          "agents": "agents.json",
+          "server": "server.mjs"
+        },
+        "files": [
+          {
+            "path": "agents.json",
+            "sha256": "dd25377e32ff1d934cd6e97e421bd041e5a24fe2ed8de2f2029eb488411ad05a",
+            "bytes": 12633
+          },
+          {
+            "path": "keeper-core.mjs",
+            "sha256": "8ca1d451b76cd38a88b76096233ae19a629e7e6dbe5a82b48bb1034c5032c597",
+            "bytes": 15485
+          },
+          {
+            "path": "legacy-v4.mjs",
+            "sha256": "7fcfdc889ab846159daa4c7c831969dc45618ad98c8ef80809a70914350da837",
+            "bytes": 13720
+          },
+          {
+            "path": "server.mjs",
+            "sha256": "7efeb1165cd04b51706f97ce7694a232de749d6f4ee6943d509724250bc5a690",
+            "bytes": 4046
+          },
+          {
+            "path": "sources.mjs",
+            "sha256": "b9e04ac0ca6a18aa0bf5ddd80e9a6cad92b57282884e7261ff261c7a25145975",
+            "bytes": 5045
+          }
+        ],
+        "permissions": [
+          "agent-runtime"
+        ],
+        "restartRequired": true
+      },
+      "category": "tracker",
+      "artifact": {
+        "url": "https://raw.githubusercontent.com/Gaia999999999/personal-marinara-keeper/main/personal-character-memory-v4-1-4.1.0.zip",
+        "sha256": "6da511b135de568d24641865d81e475519b12776cf5318ec6868cce6788130e5",
+        "bytes": 20547
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "custom",
+    "url": "https://raw.githubusercontent.com/Gaia999999999/personal-marinara-keeper/main/catalog.json"
+  }
+}

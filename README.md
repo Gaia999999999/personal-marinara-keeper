@@ -1,32 +1,17 @@
 # Personal Marinara Keeper
 
-An unofficial character-continuity keeper for Marinara Engine. Package version **4.1.0**, native pilot.
+**Current package: 4.1.1 — reliability repair.** Target: Marinara **2.5.0**, source reviewed at build **c565014**. Local checks pass; live model and installed-UI validation are pending. This is a personal pilot, not an official Marinara package or a campaign-readiness claim.
 
-The model proposes bounded changes. The runtime carries unchanged records forward and validates one complete checkpoint before publication. Invalid proposals retain the last valid state. Knowledge updates reference exact source excerpts, although interpreting those excerpts still depends on the model.
+Catalog: https://raw.githubusercontent.com/Gaia999999999/personal-marinara-keeper/main/catalog.json
 
-## Downloads
+Update the existing `personal-character-memory-v4-1` package through Marinara's native catalog flow, then fully restart Marinara and refresh its browser page. The package identity and preset link are unchanged. In its Tracker Panel, expand **Update setup**, press **Apply v4.1.1 settings** while agents are idle, and refresh once more. This restores the packaged prompt and sets the 24-message recovery supply pool; it preserves the selected model connection and saved chat memory. It is not a standalone agent JSON import.
 
-- `catalog.json`: catalog for Marinara's Download Agents installer.
-- `personal-character-memory-v4-1-4.1.0.zip`: the native runtime package.
+The repair uses short evidence IDs and a uniform transaction format. Code carries omitted records, validates a complete bounded checkpoint, preserves earlier audiences when a state changes, distinguishes explicit OOC correction from in-character text, and rejects invalid output without replacing the prior checkpoint. Normal evidence uses eight prior messages; bounded recovery can use up to 24. The output allowance remains 8,888 tokens.
 
-This repository is intended to host only the public runtime and its download metadata. It contains no roleplay transcripts, private memory seeds, character cards, provider credentials, or user test exports.
+The new panel reports the host's last recorded successful save and newer reply count. It does not verify the selected swipe or show the checkpoint revision. Inspect the injected checkpoint for that; detailed errors remain in Agents. The panel makes no model calls. Its settings button only writes after a user click.
 
-## Compatibility and status
+Local verification: 28 deterministic tests and 19 packaging checks pass, plus a private hand-authored regression replay. No live provider speed/reliability claim is made. Browser rendering could not be checked locally because the Chromium download failed. The next gate is fresh initialization plus 3–5 consecutive accepted updates on a small-cast chat.
 
-- Source-reviewed against Marinara **2.5.0**, builds **7e28236** and **c565014**.
-- The manifest allows engine versions >=2.5.0 and <2.5.1. It does not enforce an exact build hash.
-- Original build verification: 41 local core/lifecycle checks and 33 asset checks passed.
-- A real Marinara installation and live model validation are still pending. This is a pilot, not a campaign-readiness claim.
-- This is an unofficial custom package, not an official Marinara release or endorsement.
+The checkpoint remains bounded at 22,000 characters. Compaction preserves protected records, but semantic correctness still depends on the model. Unique growth can exhaust capacity; there is no archive or silent eviction. Full mechanics and large-campaign readiness remain outside this release.
 
-## Package boundary
-
-The ZIP contains `manifest.json`, `agents.json`, `server.mjs`, `keeper-core.mjs`, `legacy-v4.mjs`, and `sources.mjs`. Its declared permission is `agent-runtime` only. It makes no external request or extra model call and creates no separate database.
-
-The checkpoint is limited to 22,000 canonical characters. Capacity exhaustion stops advancement visibly rather than silently deleting records. There is no automatic archival retrieval. The package is not a combat, inventory, or numerical quest engine.
-
-Installation uses Marinara's supported HTTPS catalog mechanism. A regular agent JSON import cannot install this runtime. The matching personal preset and private setup materials are distributed separately.
-
-Runtime ZIP SHA-256:
-
-`6da511b135de568d24641865d81e475519b12776cf5318ec6868cce6788130e5`
+`source/` contains reproducible generic runtime source and synthetic tests. Run `node --test tests/run.mjs tests/status.mjs` there; `python build.py` creates the native ZIP and catalog locally. Older runtime archives remain available for historical reference. This public repository contains no private chats, character cards, preset content or private audit fixtures.

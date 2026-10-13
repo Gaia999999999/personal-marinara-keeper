@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 2,
+  "capabilityApi": {
+    "major": 1,
+    "minor": 14
+  },
+  "builtAgainst": {
+    "engineVersion": "2.5.0",
+    "engineCommit": "c56501495a8baf76c258e76534c8728a9b7859bb"
+  },
+  "id": "personal-character-memory-v4-1",
+  "name": "Personal Keeper v4.1.1 — Reliability Repair",
+  "version": "4.1.1",
+  "description": "Evidence-ID transactions, isolated state successors, bounded recovery and host-reported save status. Locally checked; live model gate pending.",
+  "engine": {
+    "min": "2.5.0",
+    "maxExclusive": "2.5.1"
+  },
+  "kind": [
+    "agent"
+  ],
+  "entrypoints": {
+    "agents": "agents.json",
+    "server": "server.mjs",
+    "client": "client.js"
+  },
+  "files": [
+    {
+      "path": "agents.json",
+      "sha256": "308cce0cca9d6b63be5d6ab90153fbf459468d87490a62ce055a838fe0899226",
+      "bytes": 8079
+    },
+    {
+      "path": "client.js",
+      "sha256": "7047d01ecf301be2430920f88da1a985dae90d1ee6bc14a5023d66543e32cfc5",
+      "bytes": 8191
+    },
+    {
+      "path": "evidence.mjs",
+      "sha256": "04f1d584aedf59ccf94482bbafd10569b38f976c4a0de51ead431e95acd54784",
+      "bytes": 4375
+    },
+    {
+      "path": "keeper-core.mjs",
+      "sha256": "586e6e0592ef499d2682688a2d720da16e522b97eedeea61ae1853dd1d68227a",
+      "bytes": 16822
+    },
+    {
+      "path": "legacy-v4.mjs",
+      "sha256": "7fcfdc889ab846159daa4c7c831969dc45618ad98c8ef80809a70914350da837",
+      "bytes": 13720
+    },
+    {
+      "path": "server.mjs",
+      "sha256": "c77336764a99873523f80e37b306b65d01a893aff91c3c12925d731e4a37b99d",
+      "bytes": 4456
+    },
+    {
+      "path": "sources.mjs",
+      "sha256": "b9e04ac0ca6a18aa0bf5ddd80e9a6cad92b57282884e7261ff261c7a25145975",
+      "bytes": 5045
+    },
+    {
+      "path": "transaction.mjs",
+      "sha256": "5aa3c96cc2ee1b34d761a5586dc1dd24b92d89fbb610b52e06e195cb123194bc",
+      "bytes": 8340
+    }
+  ],
+  "permissions": [
+    "agent-runtime",
+    "ui"
+  ],
+  "restartRequired": true,
+  "contributions": {
+    "slots": [
+      "roleplay-tracker",
+      "tracker-panel"
+    ]
+  }
+}

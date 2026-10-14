@@ -93,7 +93,7 @@ test('OOC cannot serve as in-world disclosure; a claim cannot confer knowledge',
 test('GM notes do not become evidence and chunks retain literal source text',async()=>{
   const ctx=context('I wait.','Bea waits. <gm_notes>SECRET: Clara knows everything.</gm_notes><think>Analysis here.</think>');
   const p=await prep(baseline(),ctx);assert.ok(p.sources.every(s=>s.kind!=='gm'&&!s.text.includes('SECRET:')&&!s.text.includes('Analysis here.')));
-  assert.ok(p.sources.every(s=>s.text.length>=8&&s.text.length<=190));
+  assert.ok(p.sources.every(s=>s.text.length>=1&&s.text.length<=190));
 });
 
 test('evidence ID compilation handles punctuation without model-authored quotes',async()=>{
@@ -110,10 +110,11 @@ test('new and existing row structural errors identify their operation before com
 });
 
 test('bounded compaction preserves conditions, audiences and protected collections',async()=>{
-  const p=await prep(),t=tx(p),b=p.compact.find(x=>x.ref==='plans:riley');
-  t.changes=[change('plans:riley',{action:'Meet Riley if access can be arranged; not cancelled.'},[b.id],'compact')];
+  const base=baseline();base.plans[0].action='Meet Riley  if access can be arranged; no cancellation established.';
+  const p=await prep(base),t=tx(p),b=p.compact.find(x=>x.ref==='plans:riley');
+  t.changes=[change('plans:riley',{action:'Meet Riley if access can be arranged; no cancellation established.'},[b.id],'compact')];
   const s=commitTransaction(t,p);assert.deepEqual(s.cast,p.baseline.cast);assert.deepEqual(s.directives,p.baseline.directives);assert.deepEqual(s.plans[0].known_by,p.baseline.plans[0].known_by);
-  t.changes[0].data={action:'Done'};assert.throws(()=>commitTransaction(t,p),/over 60%/);
+  t.changes[0].data={action:'Done'};assert.throws(()=>commitTransaction(t,p),/whitespace cleanup/);
   t.changes[0].data={action:null};assert.throws(()=>commitTransaction(t,p),/cannot clear/);
   t.changes[0].data={status:'completed'};assert.throws(()=>commitTransaction(t,p),/wording compaction/);
   t.changes[0].evidence=[p.compact.find(x=>x.ref==='cast:bea').id];assert.throws(()=>commitTransaction(t,p),/wrong-scope/);

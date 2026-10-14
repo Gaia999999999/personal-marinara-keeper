@@ -5,12 +5,13 @@ export const COMPLETE = 'KEEPER_V4_COMPLETE';
 export const SOFT_CHARS = 16000;
 export const MAX_CHARS = 22000;
 const TOP = ['schema','revision','base_revision','coverage','scene','cast','relations','ledger','plans','directives','changes','complete'];
-const CAPS = {cast:12, relations:30, ledger:36, plans:20, directives:24, changes:24};
+const CAPS = {cast:12, relations:30, ledger:36, plans:20, directives:24, changes:48};
 const OPEN = new Set(['proposed','intended','agreed','in_progress','blocked']);
 const isObj = x => x !== null && typeof x === 'object' && !Array.isArray(x);
 const idOK = x => typeof x === 'string' && /^[a-z0-9][a-z0-9_-]{0,79}$/.test(x);
 export const canonical = x => JSON.stringify(x);
 export const refFor = (group, row) => `${group}:${group === 'relations' ? `${row.from}>${row.to}` : row.id}`;
+const cosmeticEqual = (a,b) => JSON.stringify(a,(_,v)=>typeof v==='string'?v.trim().replace(/\s+/gu,' '):v) === JSON.stringify(b,(_,v)=>typeof v==='string'?v.trim().replace(/\s+/gu,' '):v);
 const textSize = x => typeof x === 'string' ? x.length : Array.isArray(x) ? x.reduce((n,v)=>n+textSize(v),0) : isObj(x) ? Object.values(x).reduce((n,v)=>n+textSize(v),0) : 0;
 
 export function unwrap(input) {
@@ -159,21 +160,23 @@ export function inspect(input, previousInput = null) {
         } else {
           if (group === 'cast' && (now.role !== old.role || now.name !== old.name)) bad(ref,'cast identity changed; use an audited seed for renaming/identity repair');
           if (group === 'plans' && OPEN.has(old.status) && !OPEN.has(now.status) && !receipt) bad(ref,'resolution requires receipt');
-          if (group === 'directives' && canonical(now) !== canonical(old) && !receipt) bad(ref,'directive edit/retirement requires receipt');
+          if (group === 'directives' && !cosmeticEqual(now,old) && !receipt) bad(ref,'directive edit/retirement requires receipt');
           if (group === 'ledger') {
             const lostHolder = old.holders.some(h=>!now.holders?.some?.(n=>n.who===h.who));
             const lostExclusion = old.not_known_by.some(id=>!now.not_known_by?.includes?.(id));
             if ((lostHolder || lostExclusion || (old.kind==='secret' && now.kind!=='secret')) && !receipt) bad(ref,'access/secret boundary removed without correction receipt');
           }
           if (group === 'plans' && old.known_by.some(id=>!now.known_by?.includes?.(id)) && !receipt) bad(ref,'plan audience removed without correction receipt');
-          if (textSize(old) > 120 && textSize(now) < textSize(old)*0.60 && !receipt) bad(ref,'over 40% of record text lost without compaction receipt');
+          if (textSize(old) > 120 && textSize(now) < textSize(old)*0.60 && !receipt && !cosmeticEqual(now,old)) bad(ref,'over 40% of record text lost without compaction receipt');
           // A null field must not quietly erase an established identity or commitment term.
           const protectedFields = group==='cast'?['identity','voice','core','growth']:group==='plans'?['when','where']:[];
           for (const f of protectedFields) if (old[f] !== null && now[f] === null && !receipt) bad(`${ref}.${f}`,'cleared without correction receipt');
         }
       }
-      const oldChars=canonical(previous).length;
-      if (chars < oldChars*0.65 && receipts.size===0) bad('continuity','over 35% total shrinkage without explained compaction');
+      const oldChars=canonical({...previous,changes:[]}).length;
+      const stableChars=canonical({...state,changes:[]}).length;
+      const domain=s=>['cast','relations','ledger','plans','directives'].map(k=>s[k]);
+      if (stableChars < oldChars*0.65 && receipts.size===0 && !cosmeticEqual(domain(state),domain(previous))) bad('continuity','over 35% total shrinkage without explained compaction');
     }
   } else if (state.base_revision !== null) warnings.push('No baseline supplied: completeness checked, carry-forward NOT certified.');
   return {valid:errors.length===0,errors,warnings,metrics};

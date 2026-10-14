@@ -66,8 +66,8 @@ export function buildSources(context, size = 8) {
 export function proof(evidence, sources, baseline = null) {
   if (!evidence || Object.keys(evidence).sort().join(',') !== 'quote,source' ||
       typeof evidence.source !== 'string' || typeof evidence.quote !== 'string' ||
-      evidence.quote.trim().length < 8 || evidence.quote.length > 200) {
-    throw new Error('Evidence needs exactly {source, quote}, with an exact 8–200 character excerpt.');
+      evidence.quote.trim().length < 1 || evidence.quote.length > 200) {
+    throw new Error('Evidence needs exactly {source, quote}, with an exact 1–200 character excerpt.');
   }
   let source = sources.find(s => s.id === evidence.source);
   if (!source && evidence.source.startsWith('base:') && baseline) {

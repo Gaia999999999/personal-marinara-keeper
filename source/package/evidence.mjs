@@ -10,7 +10,7 @@ const messageRef=m=>`${m.role[0]}_${hash([m.role,m.role==='assistant'?narrative(
 // Ordinary parenthetical roleplay is not author authority.
 export function scopes(text,kind){
   if(kind!=='user')return [{kind,text}];
-  const pattern=/<ooc\b[^>]*>[\s\S]*?(?:<\/ooc\s*>|$)|\[OOC\s*:[\s\S]*?\]|\(OOC\s*:[\s\S]*?\)|^\s*OOC\s*:[\s\S]*$/gim;
+  const pattern=/<ooc\b[^>]*>[\s\S]*?(?:<\/ooc\s*>|(?![\s\S]))|\[OOC\s*:[\s\S]*?\]|\(OOC\s*:[\s\S]*?\)|^[\t ]*OOC[\t ]*:[^\n]*/gim;
   const result=[];let end=0;
   for(const m of text.matchAll(pattern)){
     if(m.index>end)result.push({kind:'user',text:text.slice(end,m.index)});
@@ -26,16 +26,18 @@ function chunks(text){
     const space=remaining.lastIndexOf(' ',190),stop=space>=100?space:190;
     parts.push(remaining.slice(0,stop));remaining=remaining.slice(stop).trimStart();
   }
-  if(remaining.length>=8)parts.push(remaining);
-  else if(remaining&&text.trim().length>=8)parts.push(text.trim().slice(-190));
+  if(remaining)parts.push(remaining);
   return parts;
 }
 
 export function prepareEvidence(context,baseline){
-  let history=(context.recentMessages??[]).filter(m=>['user','assistant'].includes(m.role)).slice(-RECOVERY_WINDOW);
+  let history=(context.recentMessages??[]).filter(m=>['user','assistant'].includes(m.role));
   const reply=narrative(context.mainResponse);
   if(!reply)throw Error('No completed assistant reply is available.');
   if(history.at(-1)?.role==='assistant'&&narrative(history.at(-1).content)===reply)history=history.slice(0,-1);
+  history=history.slice(-RECOVERY_WINDOW);
+  const current=buildSources({...context,recentMessages:history},RECOVERY_WINDOW);
+  if(baseline?.anchor.turn_key===current.anchor.turn_key)throw Error('This exact user/reply pair is already committed. No catch-up or seed is needed; retry against the host-selected prior message.');
   let anchorIndex=-1;
   if(baseline){
     anchorIndex=history.findLastIndex((m,index)=>{

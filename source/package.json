@@ -1,1 +1,7 @@
-{"private":true,"type":"module","scripts":{"test":"node --test tests/run.mjs tests/status.mjs"}}
+{
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/run.mjs tests/status.mjs tests/audit.mjs"
+  }
+}

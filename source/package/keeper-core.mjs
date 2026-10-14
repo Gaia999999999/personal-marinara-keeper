@@ -18,6 +18,7 @@ const exact = (value, keys, path) => {
 const text = (value,max,path) => {if (typeof value !== 'string' || !value.trim() || value.length > max) fail(`${path}: nonempty text <=${max} required.`);};
 const list = (value,max,path) => {if (!Array.isArray(value) || value.length > max) fail(`${path}: array <=${max} required.`);};
 const identity = value => {if (typeof value !== 'string' || !/^[a-z0-9][a-z0-9_-]{0,79}$/.test(value) || ['__proto__','prototype','constructor'].includes(value)) fail('Invalid record identity.');};
+export const normalizeWording = text => text.trim().replace(/\s+/gu,' ');
 const record = (state,group,id) => state[group]?.find(r => key(group,r) === id);
 
 export function unwrap(input) {
@@ -39,11 +40,14 @@ export function inspect(input, previous = null) {
   if (!plain(state)) return {valid:false,errors:['Checkpoint must be an object.'],warnings:[],metrics:null};
   const report = inspectV4(legacy(state),prior ? legacy(prior) : null);
   const ledger=Array.isArray(state.ledger)?state.ledger:[];
+  const predecessors=new Set();
   for(const row of ledger){
     if(!row||typeof row!=='object')continue;
     if(!Object.hasOwn(row,'supersedes'))continue;
     const previous=ledger.find(r=>r?.id===row.supersedes);
-    if(typeof row.supersedes!=='string'||!previous||row.supersedes===row.id||!['state','belief'].includes(previous.kind))report.errors.push(`ledger:${row.id}: invalid successor link.`);
+    if(typeof row.supersedes!=='string'||!previous||row.supersedes===row.id||!['state','belief'].includes(previous.kind)||!['state','belief'].includes(row.kind))report.errors.push(`ledger:${row.id}: invalid successor link.`);
+    if(predecessors.has(row.supersedes))report.errors.push(`ledger:${row.id}: forked successor history.`);
+    predecessors.add(row.supersedes);
     const seen=new Set([row.id]);let cursor=previous;
     while(cursor){if(seen.has(cursor.id)){report.errors.push(`ledger:${row.id}: cyclic successor link.`);break;}seen.add(cursor.id);cursor=ledger.find(r=>r?.id===cursor.supersedes);}
     const old=prior?.ledger?.find(r=>r.id===row.id);
@@ -106,7 +110,7 @@ export function applyDelta(input, prepared) {
     if (!base || !record(base,group,id)) return;
     const ref=`${group}:${id}`;
     const old=receipts.get(ref);
-    receipts.set(ref,{ref,why:old ? `${old.why}; ${why}`.slice(0,200):why,replacement,evidence:sourceNote(evidence,200)});
+    receipts.set(ref,{ref,why:old ? `${old.why}; ${why}`.slice(0,200):why,replacement,evidence:evidence.source});
   };
   for (const u of delta.updates) {
     exact(u,['group','id','set','evidence','reason'],'update');
@@ -129,7 +133,7 @@ export function applyDelta(input, prepared) {
       if (!old || u.evidence.source!==`base:${group}:${id}` || Object.keys(u.set).some(k=>!COMPACTABLE[group].includes(k))) fail('Baseline quotes authorize wording compaction of that record only.');
       for(const [field,value] of Object.entries(u.set)) {
         if(typeof value!=='string' || typeof old[field]!=='string') fail('Compaction cannot clear or invent a field.');
-        if(old[field].length>60 && value.length<old[field].length*0.4) fail('Compaction removed over 60% of a field. Use smaller auditable edits.');
+        if(value.length>=old[field].length || value!==normalizeWording(old[field])) fail('Compaction is whitespace cleanup only; words and punctuation must remain unchanged. Semantic rewrites need a supported update or explicit correction.');
       }
     }
     if (group==='directives' && source.kind!=='baseline' && !['user','author'].includes(source.kind)) fail('Only author/user evidence can create or change an OOC directive.');
@@ -159,11 +163,22 @@ export function applyDelta(input, prepared) {
       if(group==='relations') row.basis=sourceNote(u.evidence);
       else if(['ledger','plans','directives'].includes(group)) row.source=sourceNote(u.evidence);
     }
-    receipt(group,id,u.reason,u.evidence);
+    // Cosmetic cleanup needs no bulky transient receipt; inspect verifies it.
+    if(source.kind!=='baseline')receipt(group,id,u.reason,u.evidence);
   }
 
   const accessKeys=new Set();
-  for(const a of delta.access) {
+  // Resolve grounded senders first, independent of model array order.
+  // A cycle with no initial holder never creates its own authority.
+  const pending=[...delta.access].sort((a,b)=>`${a.id}:${a.who}`.localeCompare(`${b.id}:${b.who}`));
+  while(pending.length) {
+    const index=pending.findIndex(a=>a.route!=='disclosed');
+    const ready=index>=0?index:pending.findIndex(a=>{
+      const sender=record(state,'ledger',a.id)?.holders.find(h=>h.who===a.from);
+      return sender&&(a.stance!=='knows'||sender.stance==='knows');
+    });
+    if(ready<0)fail('The sender lacks the proposed knowledge; disclosure dependencies have no grounded source.');
+    const [a]=pending.splice(ready,1);
     exact(a,['id','who','stance','route','from','evidence'],'access');
     identity(a.id); identity(a.who);
     if (a.from!==null) identity(a.from);

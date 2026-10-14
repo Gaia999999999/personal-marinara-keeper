@@ -22,6 +22,13 @@ function parseRef(ref,where){
 const find=(base,group,id)=>base?.[group]?.find(r=>(group==='relations'?`${r.from}>${r.to}`:r.id)===id);
 const citationId=entry=>`${entry.origin}.${hash(entry.text).slice(0,8)}`;
 const fields={cast:{name:80,identity:180,voice:120,core:180,now:180,growth:180},relations:{stance:220},ledger:{fact:350},plans:{action:300,when:100,where:120},directives:{rule:300}};
+const SCENE=['user','assistant','author'];
+const protectedText={cast:['identity','voice','core','growth'],relations:['stance'],plans:['action'],directives:['rule'],ledger:['fact']};
+function selectEvidence(refs,kinds,where,message){
+  const chosen=refs.find(e=>e.current&&kinds.includes(e.kind));
+  if(!chosen)error(where,message||'old overlapping or wrong-kind evidence cannot establish this change; select a current eligible source');
+  return chosen;
+}
 
 export function parseTransaction(input){
   let x=typeof input==='string'?JSON.parse(input):input;
@@ -66,26 +73,42 @@ export function commitTransaction(input,prep){
     if(!object(c.data)||!Object.keys(c.data).length)error(where,'data must contain the changed fields');
     for(const [field,value]of Object.entries(c.data))if(typeof value==='string'&&fields[r.group][field]&&value.length>fields[r.group][field])error(where,`${field} is ${value.length} characters; maximum ${fields[r.group][field]}`);
     const refs=cite(c.evidence,where,c.op==='compact'?c.ref:null);
-    const author=refs.find(e=>e.kind==='author');
-    if(c.op==='correct'&&!author)error(where,'correction needs explicit OOC/author evidence; ordinary user dialogue is not correction authority');
-    if(r.group==='directives'&&c.op!=='compact'&&!author)error(where,'ongoing author rules need explicit OOC/author evidence');
+    const author=refs.find(e=>e.kind==='author'&&e.current);
+    if(c.op==='correct'&&!author)error(where,'correction needs current explicit OOC/author evidence; ordinary user dialogue is not correction authority');
+    if(r.group==='directives'&&c.op!=='compact'&&!author)error(where,'ongoing author rules need current explicit OOC/author evidence');
     if(c.op==='compact'&&!old)error(where,'only existing records can be compacted');
     if(c.op!=='compact'&&refs.every(e=>!e.current))error(where,'old overlapping dialogue cannot establish a new change');
     let id=r.id,data=structuredClone(c.data);
+    if(old&&c.op!=='correct'&&c.op!=='compact'){
+      const preserve=r.group==='cast'?['identity','voice','core','now','growth']:r.group==='plans'?['when','where']:[];
+      for(const field of preserve)if(old[field]!==null&&data[field]===null)error(where,`${field}: clearing established information requires correct with current author evidence`);
+      // A receipt proves a patch ran, not that lost wording was justified.
+      for(const field of c.op==='set'?(protectedText[r.group]??[]):[]){
+        if(typeof old[field]==='string'&&typeof data[field]==='string'&&data[field].length<Math.ceil(old[field].length*0.6))error(where,`${field}: ordinary set removes over 40% of protected text; retain its detail or use an explicit author correction`);
+      }
+    }
+    let eligible=['user','assistant','author','card','persona','lore'];
+    const requireKinds=kinds=>{eligible=eligible.filter(kind=>kinds.includes(kind));};
+    if(c.op==='correct'||r.group==='directives')requireKinds(['author']);
+    if(r.group==='cast'&&(old?.role==='user'||data.role==='user')&&['identity','voice','core','growth'].some(k=>Object.hasOwn(data,k)&&data[k]!==null))requireKinds(['user','persona','author']);
+    if(old&&r.group==='plans')requireKinds(SCENE);
+    if(old&&r.group==='cast'&&Object.hasOwn(data,'now'))requireKinds(SCENE);
     if(r.group==='ledger'&&old){
       const changed=['kind','fact','truth'].some(k=>k in data&&data[k]!==old[k]);
       if(c.op==='advance'){
         if(!['state','belief'].includes(old.kind))error(where,'advance is for changing state or belief, not rewriting events');
         if(base.ledger.some(row=>row.supersedes===old.id))error(where,'advance the current successor, not an older observation');
-        if(typeof data.fact!=='string'||data.fact===old.fact||!Object.hasOwn(data,'truth'))error(where,'supply a new current proposition and its truth');
-        if(!refs.some(e=>['user','assistant','author'].includes(e.kind)))error(where,'a transition needs accepted scene or explicit author evidence');
-        id=`${r.id.replace(/__r\d+$/,'').slice(0,65)}__r${(base?.revision??0)+1}`;
-        if(find(base,'ledger',id))error(where,'successor ID already exists');
+        if(Object.hasOwn(data,'kind')&&data.kind!==old.kind)error(where,'advance must preserve the state/belief kind');
+        data={kind:old.kind,fact:old.fact,truth:old.truth,...data};
+        if(data.fact===old.fact&&data.truth===old.truth)error(where,'supply a changed proposition or truth assessment');
+        requireKinds(SCENE);
+        let suffix=base.revision+1;
+        do{id=`${r.id.replace(/__r\d+$/,'').slice(0,60)}__r${suffix++}`;}
+        while(find(base,'ledger',id)||links.some(link=>link.id===id));
         aliases.set(c.ref,`ledger:${id}`);links.push({id,previous:old.id});
-        data={kind:old.kind,truth:old.truth,...data};
       }else if(changed&&!['correct','compact'].includes(c.op))error(where,'use advance for a new state with its own audience; correct requires explicit OOC');
     }else if(c.op==='advance')error(where,'advance needs an existing ledger state/belief');
-    const chosen=c.op==='correct'||(r.group==='directives'&&c.op!=='compact')?author:refs.find(e=>e.current)??refs[0];
+    const chosen=c.op==='compact'?refs[0]:selectEvidence(refs,eligible,where);
     delta.updates.push({group:r.group,id,set:data,evidence:{source:chosen.source,quote:chosen.quote},reason:`${c.op} from ${c.evidence.join(', ')}`});
   }
   for(const [i,a]of tx.access.entries()){
@@ -94,10 +117,9 @@ export function commitTransaction(input,prep){
     array(a.who,12,where);if(!a.who.length||new Set(a.who).size!==a.who.length)error(where,'who needs distinct recipients');
     const refs=cite(a.evidence,where);
     if(refs.every(e=>!e.current))error(where,'a new knowledge route needs current evidence');
-    const author=refs.find(e=>e.kind==='author');
-    if(a.route==='author_correction'&&!author)error(where,'author_correction needs explicit OOC/author evidence');
-    if(a.route!=='author_correction'&&refs.some(e=>e.kind==='author'))error(where,'OOC is not in-world transmission');
-    const chosen=a.route==='author_correction'?author:refs.find(e=>e.current)??refs[0];
+    const eligible=a.route==='author_correction'?['author']:a.route==='canon'?['card','persona','lore']:['user','assistant'];
+    const message=a.route==='author_correction'?'author_correction needs current explicit OOC/author evidence':a.route==='canon'?'canon needs current card/persona/lore evidence':'An in-world route requires current accepted dialogue/narration; OOC is not in-world transmission';
+    const chosen=selectEvidence(refs,eligible,where,message);
     for(const who of a.who)delta.access.push({id:r.id,who,stance:a.stance,route:a.route,from:a.from,evidence:{source:chosen.source,quote:chosen.quote}});
   }
   if(delta.access.length>(base?24:80))error('access',`expanded recipients exceed ${base?24:80}; batch only genuine shared routes and avoid repeating unchanged audiences`);

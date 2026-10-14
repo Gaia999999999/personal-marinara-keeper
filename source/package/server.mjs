@@ -4,8 +4,8 @@ import {prepareEvidence} from './evidence.mjs';
 import {commitTransaction} from './transaction.mjs';
 
 export const PACKAGE_ID='personal-character-memory-v4-1';
-export const VERSION='4.1.1';
-const PROTOCOL='keeper-v411-runtime-1';
+export const VERSION='4.1.2';
+const PROTOCOL='keeper-v412-runtime-1';
 export function readSeed(notes){
   const seeds=[...String(notes??'').matchAll(/\[KEEPER_V41_SEED\]([\s\S]*?)\[\/KEEPER_V41_SEED\]/g)];
   if(seeds.length>1)throw Error('Select one audited seed.');
@@ -21,9 +21,12 @@ async function loadBase(agent,context){
 function identity(agent){
   if(agent.type!==PACKAGE_ID||agent.phase!=='post_processing')throw Error('Wrong native agent identity or phase.');
   if(agent.settings?.jsonContextOutput!==false)throw Error('Native keeper requires JSON Context Output OFF.');
-  if(Number(agent.settings?.contextSize)!==24)throw Error('Apply v4.1.1 settings in the Keeper panel, then refresh Marinara. The recovery input pool must be 24 messages.');
+  if(Number(agent.settings?.contextSize)!==24)throw Error('Apply v4.1.2 settings in the Keeper panel, then refresh Marinara. The recovery input pool must be 24 messages.');
 }
-function retained(prep){return prep?.baseline?`Saved revision ${prep.baseline.revision} retained.`:'No checkpoint saved yet.';}
+function retained(prep){
+  if(!prep||!Object.hasOwn(prep,'baseline'))return 'Saved checkpoint status was not loaded; no checkpoint was written.';
+  return prep.baseline?`Saved revision ${prep.baseline.revision} retained.`:'No checkpoint saved yet.';
+}
 function reject(result,prep,message){return {...result,success:false,error:`Keeper ${VERSION} NOT SAVED. ${retained(prep)} ${message}`};}
 
 export function makeRuntime(){

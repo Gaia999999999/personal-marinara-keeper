@@ -1,6 +1,7 @@
 import {applyDelta, DELTA, DELTA_COMPLETE, requireValid} from './keeper-core.mjs';
 import {hash} from './sources.mjs';
 
+export const MAX_EVIDENCE_IDS=6;
 const object=x=>x!==null&&typeof x==='object'&&!Array.isArray(x);
 const error=(where,message)=>{throw Error(`${where}: ${message}`);};
 function shape(x,keys,where){
@@ -9,6 +10,10 @@ function shape(x,keys,where){
   if(missing.length||extra.length)error(where,`${missing.length?'missing '+missing.join(', '):''}${missing.length&&extra.length?'; ':''}${extra.length?'unknown '+extra.join(', '):''}`);
 }
 function array(x,max,where){if(!Array.isArray(x)||x.length>max)error(where,`expected an array of at most ${max}`);}
+function evidenceList(ids,where){
+  array(ids,MAX_EVIDENCE_IDS,where);
+  if(!ids.length)error(where,'select at least one evidence ID');
+}
 function identity(x,where){if(typeof x!=='string'||!/^[a-z0-9][a-z0-9_-]{0,79}$/.test(x)||['__proto__','prototype','constructor'].includes(x))error(where,'invalid record ID');}
 function parseRef(ref,where){
   if(typeof ref!=='string'||ref.split(':').length!==2)error(where,'use group:id');
@@ -52,7 +57,7 @@ export function commitTransaction(input,prep){
     through:tx.through,scene:tx.scene,updates:[],access:[],retire:[],complete:DELTA_COMPLETE};
   const aliases=new Map(),links=[],seen=new Set();
   const cite=(ids,where,compactRef=null)=>{
-    array(ids,3,`${where}.evidence`);if(!ids.length)error(where,'select at least one evidence ID');
+    evidenceList(ids,`${where}.evidence`);
     return ids.map(id=>{
       const entry=compactRef?prep.compact.find(s=>s.id===id&&s.ref===compactRef):prep.sources.find(s=>s.id===id);
       if(!entry)error(where,`unknown or wrong-scope evidence ${String(id)}`);
@@ -62,10 +67,20 @@ export function commitTransaction(input,prep){
   };
   // Validate every envelope first so malformed later rows do not hide behind
   // an unrelated evidence or knowledge error earlier in the transaction.
+  // Check every evidence-list bound before compiling any mutation. Do not trim
+  // lists or silently repair routes; the entire proposal still rejects.
   const structural=[];
-  tx.changes.forEach((c,i)=>{try{shape(c,['op','ref','data','evidence'],`changes[${i}]`);}catch(e){structural.push(e.message);}});
-  tx.access.forEach((a,i)=>{try{shape(a,['ref','who','stance','route','from','evidence'],`access[${i}]`);}catch(e){structural.push(e.message);}});
-  if(structural.length)throw Error(structural.slice(0,4).join(' | '));
+  for(const [group,keys]of [['changes',['op','ref','data','evidence']],['access',['ref','who','stance','route','from','evidence']]]){
+    tx[group].forEach((row,i)=>{
+      const where=`${group}[${i}]`;
+      try{shape(row,keys,where);}catch(e){structural.push(e.message);return;}
+      try{evidenceList(row.evidence,`${where} ${row.ref}.evidence`);}catch(e){structural.push(e.message);}
+      if(group==='access'&&row.route==='disclosed'&&Array.isArray(row.who)&&row.who.includes(row.from)){
+        structural.push(`${where} ${row.ref}: disclosure needs a different named sender; who must exclude the sender`);
+      }
+    });
+  }
+  if(structural.length)throw Error(structural.slice(0,4).join(' | ')+(structural.length>4?` | ${structural.length-4} more validation errors` : ''));
   for(const [i,c]of tx.changes.entries()){
     const where=`changes[${i}] ${c.ref}`,r=parseRef(c.ref,where),old=find(base,r.group,r.id);
     if(seen.has(c.ref))error(where,'record is changed twice');seen.add(c.ref);

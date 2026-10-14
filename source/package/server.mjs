@@ -1,11 +1,11 @@
 import {hash} from './sources.mjs';
 import {requireValid,baselineHash} from './keeper-core.mjs';
 import {prepareEvidence} from './evidence.mjs';
-import {commitTransaction} from './transaction.mjs';
+import {commitTransaction,MAX_EVIDENCE_IDS} from './transaction.mjs';
 
 export const PACKAGE_ID='personal-character-memory-v4-1';
-export const VERSION='4.1.2';
-const PROTOCOL='keeper-v412-runtime-1';
+export const VERSION='4.1.3';
+const PROTOCOL='keeper-v413-runtime-1';
 export function readSeed(notes){
   const seeds=[...String(notes??'').matchAll(/\[KEEPER_V41_SEED\]([\s\S]*?)\[\/KEEPER_V41_SEED\]/g)];
   if(seeds.length>1)throw Error('Select one audited seed.');
@@ -21,7 +21,7 @@ async function loadBase(agent,context){
 function identity(agent){
   if(agent.type!==PACKAGE_ID||agent.phase!=='post_processing')throw Error('Wrong native agent identity or phase.');
   if(agent.settings?.jsonContextOutput!==false)throw Error('Native keeper requires JSON Context Output OFF.');
-  if(Number(agent.settings?.contextSize)!==24)throw Error('Apply v4.1.2 settings in the Keeper panel, then refresh Marinara. The recovery input pool must be 24 messages.');
+  if(Number(agent.settings?.contextSize)!==24)throw Error('Apply v4.1.3 settings in the Keeper panel, then refresh Marinara. The recovery input pool must be 24 messages.');
 }
 function retained(prep){
   if(!prep||!Object.hasOwn(prep,'baseline'))return 'Saved checkpoint status was not loaded; no checkpoint was written.';
@@ -41,7 +41,7 @@ export function makeRuntime(){
           turn:hash([base_hash,evidence.anchor.turn_key,evidence.fingerprint]).slice(0,16),
           // Canonical ledger retains earlier observations; these are current heads.
           current_states:loaded.baseline?.ledger.filter(r=>['state','belief'].includes(r.kind)&&!loaded.baseline.ledger.some(n=>n.supersedes===r.id)).map(r=>r.id)??[],
-          budget:{used:loaded.baseline?JSON.stringify(loaded.baseline).length:0,target:16000,max:22000},
+          budget:{used:loaded.baseline?JSON.stringify(loaded.baseline).length:0,target:16000,max:22000,evidence_ids_per_item:MAX_EVIDENCE_IDS},
           instruction:'Use evidence IDs only. Emit the small transaction; code carries untouched memory. No quotes, baseline, reasoning or fiction in output.'};
       }catch(e){
         // The host otherwise skips a failed prepare hook and still calls the model.

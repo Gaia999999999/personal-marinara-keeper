@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-15T11:46:37.114877Z",
+  "generatedAt": "2026-10-15T18:48:49.256974Z",
   "packages": [
     {
       "manifest": {
@@ -14,9 +14,9 @@
           "engineCommit": "c56501495a8baf76c258e76534c8728a9b7859bb"
         },
         "id": "personal-character-memory-v4-1",
-        "name": "Personal Keeper v4.1.5 — Field and Status Repair",
-        "version": "4.1.5",
-        "description": "Concise foreground fields, combined text-bound diagnostics, scoped plan timing and clearer save status. Live retry pending.",
+        "name": "Personal Keeper v4.1.6 — Retention and Budget Repair",
+        "version": "4.1.6",
+        "description": "Durable custody and conditional-plan guidance, budget visibility and compact new provenance. Preserves existing checkpoints and validation.",
         "engine": {
           "min": "2.5.0",
           "maxExclusive": "2.5.1"
@@ -32,12 +32,12 @@
         "files": [
           {
             "path": "agents.json",
-            "sha256": "6d974e6aa882a0c1a04d22351e638daeb68c859d73fe5e63690f95c52f315cee",
-            "bytes": 16951
+            "sha256": "bbadca2626cf5362006d2107f9dd37dc3990266e5d4b32f3c8a680b59f1672c7",
+            "bytes": 20401
           },
           {
             "path": "client.js",
-            "sha256": "40474e92282f45caaebea4d075bbc60698364366c5dd04d2c536ee9cb2f55ab2",
+            "sha256": "d3cedfd4a39287e9c872d1ab36282ca9e8672f0107cb24682197e81e0be1673c",
             "bytes": 8523
           },
           {
@@ -57,13 +57,13 @@
           },
           {
             "path": "server.mjs",
-            "sha256": "5b8c984abb317114633653c1d3e143e2b3ed982237e045abb4424726903b273d",
-            "bytes": 5566
+            "sha256": "c084b9e49f1f5303384efee1ce77f9ae1a3347833553f8c4c9d4df645edb721f",
+            "bytes": 5739
           },
           {
             "path": "sources.mjs",
-            "sha256": "1fffdc7c7d5c7d402aafe693f9c8b3b257305f5fb80c7e29f2addd3b38233b78",
-            "bytes": 5045
+            "sha256": "b2a1d7a2f0165bea713db561e8f7c8f8b7a87ce6de75c88fef2b0c5d0ee83eee",
+            "bytes": 5398
           },
           {
             "path": "transaction.mjs",
@@ -74,6 +74,11 @@
             "path": "scene-boundary.mjs",
             "sha256": "737db1ce6b1abc7b2a2fb9c2d0e4a7bd6af631b930083c7a267f2aeca2d7bdfb",
             "bytes": 1209
+          },
+          {
+            "path": "retention.mjs",
+            "sha256": "200adf2f5986ff2cc8944aa6449f6710c37a0ea1cbbba69a910c0d3bbe308952",
+            "bytes": 1736
           }
         ],
         "permissions": [
@@ -90,9 +95,9 @@
       },
       "category": "tracker",
       "artifact": {
-        "url": "https://raw.githubusercontent.com/Gaia999999999/personal-marinara-keeper/main/personal-character-memory-v4-1-4.1.5.zip",
-        "sha256": "fe5fc11957ea9af960fefb6bfca484171168c03a027445919c0a96a508afa71a",
-        "bytes": 34898
+        "url": "https://raw.githubusercontent.com/Gaia999999999/personal-marinara-keeper/main/personal-character-memory-v4-1-4.1.6.zip",
+        "sha256": "6d9e7530a3a7d8a78b4b334ee656cd5e93fe28b4e8242a8a0128173b19c5118f",
+        "bytes": 37525
       }
     }
   ],

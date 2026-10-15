@@ -81,5 +81,10 @@ export function proof(evidence, sources, baseline = null) {
 }
 
 export function sourceNote(evidence, max = 120) {
-  return `${evidence.source}: ${evidence.quote}`.slice(0,max);
+  // Validation already checked the full current excerpt. Persist its stable
+  // content-addressed ID, rather than repeating clipped narration in every
+  // source/basis/via field. Historical notes are not migrated or shortened.
+  if(typeof evidence.source!=='string'||!evidence.source||evidence.source.length>max)
+    throw new Error('Stored evidence identity exceeds its field bound.');
+  return evidence.source;
 }

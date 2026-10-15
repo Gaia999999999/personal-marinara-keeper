@@ -3,10 +3,11 @@ import {requireValid,baselineHash} from './keeper-core.mjs';
 import {prepareEvidence} from './evidence.mjs';
 import {commitTransaction,MAX_EVIDENCE_IDS,FOREGROUND_LIMITS} from './transaction.mjs';
 import {sceneBoundary} from './scene-boundary.mjs';
+import {memoryBudget,retentionReview} from './retention.mjs';
 
 export const PACKAGE_ID='personal-character-memory-v4-1';
-export const VERSION='4.1.5';
-const PROTOCOL='keeper-v415-runtime-1';
+export const VERSION='4.1.6';
+const PROTOCOL='keeper-v416-runtime-1';
 export function readSeed(notes){
   const seeds=[...String(notes??'').matchAll(/\[KEEPER_V41_SEED\]([\s\S]*?)\[\/KEEPER_V41_SEED\]/g)];
   if(seeds.length>1)throw Error('Select one audited seed.');
@@ -22,13 +23,13 @@ async function loadBase(agent,context){
 function identity(agent){
   if(agent.type!==PACKAGE_ID||agent.phase!=='post_processing')throw Error('Wrong native agent identity or phase.');
   if(agent.settings?.jsonContextOutput!==false)throw Error('Native keeper requires JSON Context Output OFF.');
-  if(Number(agent.settings?.contextSize)!==24)throw Error('Apply v4.1.5 settings in the Keeper panel, then refresh Marinara. The recovery input pool must be 24 messages.');
+  if(Number(agent.settings?.contextSize)!==24)throw Error('Apply v4.1.6 settings in the Keeper panel, then refresh Marinara. The recovery input pool must be 24 messages.');
   const settings=agent.settings??{};
   if(Object.values(settings.contextSources??{}).some(value=>value===true)||
       ['includePreGenInjections','includeParallelResults','triggerLorebooksForAgentCalls'].some(key=>settings[key]===true)||
       (Array.isArray(settings.enabledTools)&&settings.enabledTools.length)||
       Object.values(settings.customCapabilities??{}).some(value=>value===true)){
-    throw Error('Apply v4.1.5 settings: extra context, abilities and tools must be off for the bounded Keeper input.');
+    throw Error('Apply v4.1.6 settings: extra context, abilities and tools must be off for the bounded Keeper input.');
   }
 }
 function retained(prep){
@@ -47,11 +48,12 @@ export function makeRuntime(){
         const base_hash=baselineHash(loaded.baseline);
         return {protocol:PROTOCOL,agent_id:agent.id,chat_id:context.chatId,...loaded,base_hash,...evidence,
           scene_boundary:sceneBoundary(context,evidence),
+          retention_review:retentionReview(loaded.baseline),
           turn:hash([base_hash,evidence.anchor.turn_key,evidence.fingerprint]).slice(0,16),
           // Canonical ledger retains earlier observations; these are current heads.
           current_states:loaded.baseline?.ledger.filter(r=>['state','belief'].includes(r.kind)&&!loaded.baseline.ledger.some(n=>n.supersedes===r.id)).map(r=>r.id)??[],
-          budget:{used:loaded.baseline?JSON.stringify(loaded.baseline).length:0,target:16000,max:22000,evidence_ids_per_item:MAX_EVIDENCE_IDS,foreground_text_limits:FOREGROUND_LIMITS},
-          instruction:'Use indexed sources and scene_boundary. Keep through to one short progress sentence (aim <=120 characters), scene to the foreground (aim <=180); each has a hard 240-character cap. Store timing/conditions in the relevant plan with supported audience. Leave unanswered choices open; ignore unindexed host/GM text. Emit only the small transaction; code carries untouched memory.'};
+          budget:{...memoryBudget(loaded.baseline),evidence_ids_per_item:MAX_EVIDENCE_IDS,foreground_text_limits:FOREGROUND_LIMITS},
+          instruction:'Use indexed sources, scene_boundary and retention_review. Keep through to one short sentence (aim <=120 characters), scene to the foreground (aim <=180); each has a hard 240-character cap. Preserve still-current custody before replacing cast.now; store conditional intentions in actual plans with supported audience. Banter is not a ledger transcript. Leave unanswered choices open; ignore unindexed host/GM text. Emit only the small transaction; code carries untouched memory.'};
       }catch(e){
         // The host otherwise skips a failed prepare hook and still calls the model.
         // A blocked context gives it an explicit, tiny refusal protocol instead.

@@ -1,18 +1,17 @@
 {
-  "version": "4.1.5",
-  "testedAt": "2026-10-15T11:45:30.354496+00:00",
-  "command": "npm test",
-  "runtime": "Node 24.19.0",
-  "passed": 96,
+  "version": "4.1.6",
+  "allPassed": true,
+  "tests": 109,
+  "passed": 109,
   "failed": 0,
-  "retainedTests": 84,
-  "newTests": 12,
-  "preservationAndSourceModulesUnchangedFrom414": [
+  "retainedRegressions": 96,
+  "newTests": 13,
+  "unchangedFrom415Modules": [
     "keeper-core.mjs",
-    "evidence.mjs",
     "legacy-v4.mjs",
-    "sources.mjs",
+    "evidence.mjs",
+    "transaction.mjs",
     "scene-boundary.mjs"
   ],
-  "scope": "Deterministic tests and synthetic fixtures; no paid provider call, installed-host or browser-rendering pass. Private reconstructed correction and helper mocks are separate checks."
+  "scope": "Local synthetic regression tests. No paid provider calls, installed-browser check, semantic completeness guarantee or latency/cost benchmark."
 }

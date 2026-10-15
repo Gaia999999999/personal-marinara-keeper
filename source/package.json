@@ -2,6 +2,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test tests/run.mjs tests/status.mjs tests/audit.mjs tests/initialization.mjs"
+    "test": "node --test tests/run.mjs tests/status.mjs tests/audit.mjs tests/initialization.mjs tests/scene-boundary.mjs"
   }
 }

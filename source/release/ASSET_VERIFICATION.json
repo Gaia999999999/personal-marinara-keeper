@@ -1,9 +1,9 @@
 {
   "allPassed": true,
-  "passed": 19,
-  "artifact": "personal-character-memory-v4-1-4.1.3.zip",
-  "bytes": 31597,
-  "sha256": "e579c4617ef3a1e7ce8873151858392713f9d7554a928ab849e04af6c6d0c5a1",
+  "passed": 20,
+  "artifact": "personal-character-memory-v4-1-4.1.4.zip",
+  "bytes": 33862,
+  "sha256": "5a0379ca68528daeabf022d17789d387f46e437eee1a5939da8a49efffa1a628",
   "checks": [
     {
       "name": "same native package/agent identity",
@@ -30,7 +30,7 @@
       "passed": true
     },
     {
-      "name": "runtime is the sole evidence catalog",
+      "name": "optional context is disabled; host still repeats the assistant response",
       "passed": true
     },
     {
@@ -75,6 +75,10 @@
     },
     {
       "name": "payload integrity: transaction.mjs",
+      "passed": true
+    },
+    {
+      "name": "payload integrity: scene-boundary.mjs",
       "passed": true
     },
     {

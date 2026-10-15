@@ -165,7 +165,7 @@ test('historical first-reply retry recovers after rejection, then two updates pr
 });
 
 test('the shipped prompt audience examples pass the same compiler as real transactions',async()=>{
-  const prompt=readFileSync(new URL('../Keeper_Prompt_v4.1.3.txt',import.meta.url),'utf8');
+  const prompt=readFileSync(new URL('../Keeper_Prompt_v4.1.4.txt',import.meta.url),'utf8');
   const rows=prompt.split('\n').filter(l=>l.startsWith('{"ref":"ledger:station_power"')||l.startsWith('{"ref":"ledger:key_tag"')||l.startsWith('{"op":"set","ref":"ledger:station_power"')).map(JSON.parse);
   assert.equal(rows.length,4);
   const ctx=freshContext();ctx.mainResponse='Rowan tells Alex and Bea that the remote station lost power. Clara is outside and cannot hear. Bea alone reads the key tag: HQ 24-A. She then tells Alex exactly what it says; Clara is absent.';

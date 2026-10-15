@@ -1,9 +1,9 @@
 {
   "allPassed": true,
   "passed": 20,
-  "artifact": "personal-character-memory-v4-1-4.1.4.zip",
-  "bytes": 33862,
-  "sha256": "5a0379ca68528daeabf022d17789d387f46e437eee1a5939da8a49efffa1a628",
+  "artifact": "personal-character-memory-v4-1-4.1.5.zip",
+  "bytes": 34898,
+  "sha256": "fe5fc11957ea9af960fefb6bfca484171168c03a027445919c0a96a508afa71a",
   "checks": [
     {
       "name": "same native package/agent identity",

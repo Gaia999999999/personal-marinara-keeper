@@ -27,6 +27,7 @@ function parseRef(ref,where){
 const find=(base,group,id)=>base?.[group]?.find(r=>(group==='relations'?`${r.from}>${r.to}`:r.id)===id);
 const citationId=entry=>`${entry.origin}.${hash(entry.text).slice(0,8)}`;
 const fields={cast:{name:80,identity:180,voice:120,core:180,now:180,growth:180},relations:{stance:220},ledger:{fact:350},plans:{action:300,when:100,where:120},directives:{rule:300}};
+export const FOREGROUND_LIMITS=Object.freeze({through:240,scene:240});
 const SCENE=['user','assistant','author'];
 const protectedText={cast:['identity','voice','core','growth'],relations:['stance'],plans:['action'],directives:['rule'],ledger:['fact']};
 function selectEvidence(refs,kinds,where,message){
@@ -67,14 +68,29 @@ export function commitTransaction(input,prep){
   };
   // Validate every envelope first so malformed later rows do not hide behind
   // an unrelated evidence or knowledge error earlier in the transaction.
-  // Check every evidence-list bound before compiling any mutation. Do not trim
-  // lists or silently repair routes; the entire proposal still rejects.
+  // Report bounded text failures together, including the two top-level fields.
+  // No text/citation trimming or partial commit is performed by this preflight.
   const structural=[];
+  const boundedText=(value,max,where,nullable=false)=>{
+    if(nullable&&value===null)return;
+    if(typeof value!=='string'||!value.trim())structural.push(`${where}: expected nonempty text${nullable?' or null':''}, maximum ${max} characters`);
+    else if(value.length>max)structural.push(`${where} is ${value.length} characters; maximum ${max}`);
+  };
+  boundedText(tx.through,FOREGROUND_LIMITS.through,'through');
+  boundedText(tx.scene,FOREGROUND_LIMITS.scene,'scene',true);
   for(const [group,keys]of [['changes',['op','ref','data','evidence']],['access',['ref','who','stance','route','from','evidence']]]){
     tx[group].forEach((row,i)=>{
       const where=`${group}[${i}]`;
       try{shape(row,keys,where);}catch(e){structural.push(e.message);return;}
       try{evidenceList(row.evidence,`${where} ${row.ref}.evidence`);}catch(e){structural.push(e.message);}
+      if(group==='changes'&&typeof row.ref==='string'&&object(row.data)){
+        const limits=fields[row.ref.split(':')[0]];
+        if(limits)for(const [field,value]of Object.entries(row.data)){
+          if(typeof value==='string'&&Object.hasOwn(limits,field)&&value.length>limits[field]){
+            structural.push(`${where} ${row.ref}: ${field} is ${value.length} characters; maximum ${limits[field]}`);
+          }
+        }
+      }
       if(group==='access'&&row.route==='disclosed'&&Array.isArray(row.who)&&row.who.includes(row.from)){
         structural.push(`${where} ${row.ref}: disclosure needs a different named sender; who must exclude the sender`);
       }
@@ -86,7 +102,6 @@ export function commitTransaction(input,prep){
     if(seen.has(c.ref))error(where,'record is changed twice');seen.add(c.ref);
     if(!['set','advance','correct','compact'].includes(c.op))error(where,'op must be set, advance, correct or compact');
     if(!object(c.data)||!Object.keys(c.data).length)error(where,'data must contain the changed fields');
-    for(const [field,value]of Object.entries(c.data))if(typeof value==='string'&&fields[r.group][field]&&value.length>fields[r.group][field])error(where,`${field} is ${value.length} characters; maximum ${fields[r.group][field]}`);
     const refs=cite(c.evidence,where,c.op==='compact'?c.ref:null);
     const author=refs.find(e=>e.kind==='author'&&e.current);
     if(c.op==='correct'&&!author)error(where,'correction needs current explicit OOC/author evidence; ordinary user dialogue is not correction authority');

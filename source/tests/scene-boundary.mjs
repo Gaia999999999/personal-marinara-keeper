@@ -96,7 +96,7 @@ test('extra context and abilities block with retained state instead of silently 
 
 test('Apply Settings clears the unwanted channels and preserves the selected connection/preferences',()=>{
   const input={connectionId:'selected',settings:{temperature:0.35,customCapabilities:{edit_messages:true},includeParallelResults:true,contextSources:{chatHistory:true}}};
-  const patch=upgradePatch(input);assert.match(patch.name,/4\.1\.4/);assert.deepEqual(patch.settings.customCapabilities,{});assert.equal(patch.settings.includeParallelResults,false);assert(Object.values(patch.settings.contextSources).every(x=>!x));assert.equal(patch.settings.temperature,0.35);assert.equal(patch.connectionId,undefined);assert.equal(input.connectionId,'selected');
+  const patch=upgradePatch(input);assert.match(patch.name,/4\.1\.5/);assert.deepEqual(patch.settings.customCapabilities,{});assert.equal(patch.settings.includeParallelResults,false);assert(Object.values(patch.settings.contextSources).every(x=>!x));assert.equal(patch.settings.temperature,0.35);assert.equal(patch.connectionId,undefined);assert.equal(input.connectionId,'selected');
 });
 
 test('a concurrent edit still rejects even with an unchanged ending',async()=>{
@@ -106,7 +106,7 @@ test('a concurrent edit still rejects even with an unchanged ending',async()=>{
 });
 
 test('the shipped contract scopes the host copy and all foreground fields without changing checkpoint schema',()=>{
-  const prompt=readFileSync(new URL('../Keeper_Prompt_v4.1.4.txt',import.meta.url),'utf8'),agentFile=JSON.parse(readFileSync(new URL('../package/agents.json',import.meta.url),'utf8'))[0];
+  const prompt=readFileSync(new URL('../Keeper_Prompt_v4.1.5.txt',import.meta.url),'utf8'),agentFile=JSON.parse(readFileSync(new URL('../package/agents.json',import.meta.url),'utf8'))[0];
   assert.equal(agentFile.defaultPromptTemplate,prompt.trim());
   for(const text of ['NOT additional evidence','through, scene, cast.now, plans and ledger','not a permanent ban on movement','one-time OOC correction','when <=100','all pending user choices'])assert(prompt.includes(text),text);
   assert.equal(baseline().schema,'character_memory.v4.1');

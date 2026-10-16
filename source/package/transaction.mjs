@@ -148,7 +148,12 @@ export function commitTransaction(input,prep){
     const refs=cite(a.evidence,where);
     if(refs.every(e=>!e.current))error(where,'a new knowledge route needs current evidence');
     const eligible=a.route==='author_correction'?['author']:a.route==='canon'?['card','persona','lore']:['user','assistant'];
-    const message=a.route==='author_correction'?'author_correction needs current explicit OOC/author evidence':a.route==='canon'?'canon needs current card/persona/lore evidence':'An in-world route requires current accepted dialogue/narration; OOC is not in-world transmission';
+    const requirement=a.route==='author_correction'?'author_correction needs current explicit OOC/author evidence':a.route==='canon'?'canon needs current card/persona/lore evidence':'An in-world route requires current accepted dialogue/narration; OOC is not in-world transmission';
+    const cited=refs.map((ref,index)=>`${a.evidence[index]}=${ref.current?'current':'stale'} ${ref.kind}`).join(', ');
+    const guidance=refs.some(ref=>ref.current&&ref.kind==='author')&&a.route!=='author_correction'&&a.route!=='canon'
+      ? ' For an explicit OOC repair of this character\'s access, use author_correction and cite the complete character/audience clause, including adjacent spans if split. Otherwise omit unsupported access. Routes are not converted automatically.'
+      : ' Select current evidence eligible for this route and supporting the exact recipient/scope; an unrelated current span cannot supply missing authority. Routes are not converted automatically.';
+    const message=`${requirement}. Cited: ${cited}.${guidance}`;
     const chosen=selectEvidence(refs,eligible,where,message);
     for(const who of a.who)delta.access.push({id:r.id,who,stance:a.stance,route:a.route,from:a.from,evidence:{source:chosen.source,quote:chosen.quote}});
   }

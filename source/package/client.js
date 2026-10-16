@@ -18,7 +18,7 @@ const sourceKeys=['chatHistory','characters','persona','activatedLorebookEntries
 export function upgradePatch(config={}){
   let settings=config.settings??{};if(typeof settings==='string')settings=JSON.parse(settings);
   if(!settings||typeof settings!=='object'||Array.isArray(settings))throw Error('Cannot read keeper settings.');
-  return {name:'Character Memory Keeper v4.1.6 — Native',phase:'post_processing',promptTemplate:'',settings:{...settings,
+  return {name:'Character Memory Keeper v4.1.7 — Native',phase:'post_processing',promptTemplate:'',settings:{...settings,
     resultType:'context_injection',jsonContextOutput:false,hideOutput:true,injectAsSection:true,contextSize:24,maxTokens:8888,runInterval:1,
     includePreGenInjections:false,includeParallelResults:false,triggerLorebooksForAgentCalls:false,enabledTools:[],customCapabilities:{},
     contextSources:Object.fromEntries(sourceKeys.map(k=>[k,false]))}};
@@ -36,8 +36,8 @@ if(typeof HTMLElement!=='undefined'&&!customElements.get(`marinara-capability-${
   class KeeperStatus extends HTMLElement{
     static get observedAttributes(){return ['view'];}
     constructor(){
-      super();this.attachShadow({mode:'open'});this.status={kind:'loading',title:'Keeper v4.1.6',detail:'Checking saved memory…'};
-      this.onProps=()=>{const next=this.capabilityProps?.chatId;if(next!==this.chatId){this.chatId=next;this.status={kind:'loading',title:'Keeper v4.1.6',detail:'Checking saved memory…'};this.render();this.refresh();}else this.render();};
+      super();this.attachShadow({mode:'open'});this.status={kind:'loading',title:'Keeper v4.1.7',detail:'Checking saved memory…'};
+      this.onProps=()=>{const next=this.capabilityProps?.chatId;if(next!==this.chatId){this.chatId=next;this.status={kind:'loading',title:'Keeper v4.1.7',detail:'Checking saved memory…'};this.render();this.refresh();}else this.render();};
       this.addEventListener('marinara-capability-props',this.onProps);
     }
     connectedCallback(){this.onProps();this.render();this.timer=setInterval(()=>{if(!document.hidden&&!this.busy)this.refresh();},5000);}
@@ -48,14 +48,14 @@ if(typeof HTMLElement!=='undefined'&&!customElements.get(`marinara-capability-${
       try{
         const configs=await request('/api/agents'),config=configs.find(r=>r.type===PACKAGE_ID);
         await request(`/api/agents/type/${PACKAGE_ID}`,{method:'PATCH',body:JSON.stringify(upgradePatch(config))});
-        this.setupMessage='v4.1.6 settings applied. Refresh Marinara before the test.';
+        this.setupMessage='v4.1.7 settings applied. Refresh Marinara before the test.';
       }catch(e){this.setupMessage=`Settings were not confirmed: ${e.message}`;}
       finally{this.upgrading=false;this.render();}
     }
     async refresh(){
       this.controller?.abort();const controller=new AbortController();this.controller=controller;
       const chatId=this.chatId;
-      if(!chatId){this.status={kind:'empty',title:'Keeper v4.1.6',detail:'Open a chat to check saved memory.'};this.render();return;}
+      if(!chatId){this.status={kind:'empty',title:'Keeper v4.1.7',detail:'Open a chat to check saved memory.'};this.render();return;}
       this.busy=true;
       const timeout=setTimeout(()=>controller.abort(),10000);
       try{
@@ -73,14 +73,14 @@ if(typeof HTMLElement!=='undefined'&&!customElements.get(`marinara-capability-${
       const root=this.shadowRoot,expanded=!!root.querySelector('details')?.open;root.replaceChildren();
       const style=document.createElement('style');style.textContent=`:host{display:block;font:12px/1.5 system-ui,sans-serif;color:var(--foreground,#ddd)}.box{padding:12px;border:1px solid var(--border,#555);border-radius:10px;background:var(--background,#202228)}.title{font-weight:650}.detail{margin:6px 0;color:var(--muted-foreground,#aaa);max-width:65ch}.badge{display:inline-block;border-radius:20px;padding:2px 8px;background:var(--muted,#333);margin-bottom:7px;font-size:10px}.behind .badge{color:#f5c068}button{font:inherit;color:inherit;background:var(--secondary,#333);border:1px solid var(--border,#666);border-radius:6px;padding:6px 10px;cursor:pointer}button:focus-visible{outline:2px solid #7caeff;outline-offset:2px}:host([view=toolbar]) .box{padding:5px 9px}:host([view=toolbar]) .detail,:host([view=toolbar]) button,:host([view=toolbar]) .badge{display:none}`;
       const box=document.createElement('div');box.className=`box ${this.status.kind}`;box.setAttribute('role','status');box.setAttribute('aria-live','polite');box.title=this.status.detail;
-      const badge=document.createElement('div');badge.className='badge';badge.textContent='KEEPER 4.1.6 · SAVE STATUS';
+      const badge=document.createElement('div');badge.className='badge';badge.textContent='KEEPER 4.1.7 · SAVE STATUS';
       const title=document.createElement('div');title.className='title';title.textContent=this.status.title;
       const detail=document.createElement('p');detail.className='detail';detail.textContent=this.status.detail;
       const button=document.createElement('button');button.type='button';button.textContent='Refresh status';button.addEventListener('click',()=>this.refresh());
       const setup=document.createElement('details');setup.style.marginTop='10px';setup.className='detail';setup.open=expanded;
       const summary=document.createElement('summary');summary.textContent='Update setup';
       const note=document.createElement('p');note.textContent=this.setupMessage||'Once after updating: apply the packaged prompt and 24-message recovery pool. Your model connection and saved chat memory stay in place. Do this while agents are idle, then refresh Marinara.';
-      const apply=document.createElement('button');apply.type='button';apply.disabled=!!this.upgrading;apply.textContent='Apply v4.1.6 settings';apply.addEventListener('click',()=>this.upgrade());
+      const apply=document.createElement('button');apply.type='button';apply.disabled=!!this.upgrading;apply.textContent='Apply v4.1.7 settings';apply.addEventListener('click',()=>this.upgrade());
       setup.append(summary,note,apply);box.append(badge,title,detail,button,setup);root.append(style,box);
     }
   }

@@ -1,16 +1,16 @@
 {
   "allPassed": true,
-  "passed": 21,
-  "artifact": "personal-character-memory-v4-1-4.1.6.zip",
-  "bytes": 37525,
-  "sha256": "6d9e7530a3a7d8a78b4b334ee656cd5e93fe28b4e8242a8a0128173b19c5118f",
+  "passed": 22,
+  "artifact": "personal-character-memory-v4-1-4.1.7.zip",
+  "bytes": 39573,
+  "sha256": "299c4a033d85d42ab3d33630055617b3074091f8d7bac47dbc8f769808a8440d",
   "checks": [
     {
       "name": "same native package/agent identity",
       "passed": true
     },
     {
-      "name": "new immutable release version",
+      "name": "explicit stable release version",
       "passed": true
     },
     {
@@ -83,6 +83,10 @@
     },
     {
       "name": "payload integrity: retention.mjs",
+      "passed": true
+    },
+    {
+      "name": "stable catalog targets main",
       "passed": true
     },
     {

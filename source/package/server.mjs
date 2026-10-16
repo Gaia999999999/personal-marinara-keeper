@@ -6,8 +6,8 @@ import {sceneBoundary} from './scene-boundary.mjs';
 import {memoryBudget,retentionReview} from './retention.mjs';
 
 export const PACKAGE_ID='personal-character-memory-v4-1';
-export const VERSION='4.1.6';
-const PROTOCOL='keeper-v416-runtime-1';
+export const VERSION='4.1.7';
+const PROTOCOL='keeper-v417-runtime-1';
 export function readSeed(notes){
   const seeds=[...String(notes??'').matchAll(/\[KEEPER_V41_SEED\]([\s\S]*?)\[\/KEEPER_V41_SEED\]/g)];
   if(seeds.length>1)throw Error('Select one audited seed.');
@@ -23,13 +23,13 @@ async function loadBase(agent,context){
 function identity(agent){
   if(agent.type!==PACKAGE_ID||agent.phase!=='post_processing')throw Error('Wrong native agent identity or phase.');
   if(agent.settings?.jsonContextOutput!==false)throw Error('Native keeper requires JSON Context Output OFF.');
-  if(Number(agent.settings?.contextSize)!==24)throw Error('Apply v4.1.6 settings in the Keeper panel, then refresh Marinara. The recovery input pool must be 24 messages.');
+  if(Number(agent.settings?.contextSize)!==24)throw Error('Apply v4.1.7 settings in the Keeper panel, then refresh Marinara. The recovery input pool must be 24 messages.');
   const settings=agent.settings??{};
   if(Object.values(settings.contextSources??{}).some(value=>value===true)||
       ['includePreGenInjections','includeParallelResults','triggerLorebooksForAgentCalls'].some(key=>settings[key]===true)||
       (Array.isArray(settings.enabledTools)&&settings.enabledTools.length)||
       Object.values(settings.customCapabilities??{}).some(value=>value===true)){
-    throw Error('Apply v4.1.6 settings: extra context, abilities and tools must be off for the bounded Keeper input.');
+    throw Error('Apply v4.1.7 settings: extra context, abilities and tools must be off for the bounded Keeper input.');
   }
 }
 function retained(prep){
@@ -48,6 +48,7 @@ export function makeRuntime(){
         const base_hash=baselineHash(loaded.baseline);
         return {protocol:PROTOCOL,agent_id:agent.id,chat_id:context.chatId,...loaded,base_hash,...evidence,
           scene_boundary:sceneBoundary(context,evidence),
+          authority_reminder:'For access, use the authority of current cited evidence: an explicit OOC restoration uses author_correction even for the character\'s own earlier experience; self needs current in-world experience. Read the whole character/audience clause across adjacent spans and cite each needed ID within the six-ID bound. Scene-boundary current-author IDs locate those clauses; these hints do not supply evidence. A prose acknowledgment is not a new observation. Do not invent access or relabel evidence; incompatible routes reject without conversion.',
           retention_review:retentionReview(loaded.baseline),
           turn:hash([base_hash,evidence.anchor.turn_key,evidence.fingerprint]).slice(0,16),
           // Canonical ledger retains earlier observations; these are current heads.

@@ -1,17 +1,10 @@
 {
-  "version": "4.1.6",
+  "version": "4.1.7",
   "allPassed": true,
-  "tests": 109,
-  "passed": 109,
+  "tests": 125,
+  "passed": 125,
   "failed": 0,
-  "retainedRegressions": 96,
-  "newTests": 13,
-  "unchangedFrom415Modules": [
-    "keeper-core.mjs",
-    "legacy-v4.mjs",
-    "evidence.mjs",
-    "transaction.mjs",
-    "scene-boundary.mjs"
-  ],
-  "scope": "Local synthetic regression tests. No paid provider calls, installed-browser check, semantic completeness guarantee or latency/cost benchmark."
+  "auditedSuitePreserved": true,
+  "knownSemanticAcceptanceGapsResolved": false,
+  "scope": "Full deterministic suite on stable package; no installed-host or provider/model execution."
 }

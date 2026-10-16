@@ -1,0 +1,104 @@
+{
+  "version": "4.1.7",
+  "reviewedCandidate": "4.1.7-rc.2",
+  "reviewedCommit": "ea19c0667cbd76d2fd5a342ddd14f929a27ea2a8",
+  "allPassed": true,
+  "passed": 23,
+  "validationLogicChanged": false,
+  "architectureChanged": false,
+  "promptSha256": "7fbede6c2539757e691c896a4b7be3f9a91edaeb52f5d311958d5139a3b78644",
+  "checks": [
+    {
+      "name": "keeper-core.mjs byte-identical to rc.2",
+      "passed": true
+    },
+    {
+      "name": "legacy-v4.mjs byte-identical to rc.2",
+      "passed": true
+    },
+    {
+      "name": "sources.mjs byte-identical to rc.2",
+      "passed": true
+    },
+    {
+      "name": "evidence.mjs byte-identical to rc.2",
+      "passed": true
+    },
+    {
+      "name": "scene-boundary.mjs byte-identical to rc.2",
+      "passed": true
+    },
+    {
+      "name": "retention.mjs byte-identical to rc.2",
+      "passed": true
+    },
+    {
+      "name": "transaction.mjs byte-identical to rc.2",
+      "passed": true
+    },
+    {
+      "name": "server.mjs version/protocol changes only",
+      "passed": true
+    },
+    {
+      "name": "client.js version/protocol changes only",
+      "passed": true
+    },
+    {
+      "name": "Reviewed prompt byte-identical",
+      "passed": true
+    },
+    {
+      "name": "Package test entry point unchanged",
+      "passed": true
+    },
+    {
+      "name": "Regression unchanged apart from version/path: fixtures.mjs",
+      "passed": true
+    },
+    {
+      "name": "Regression unchanged apart from version/path: retention.mjs",
+      "passed": true
+    },
+    {
+      "name": "Regression unchanged apart from version/path: status.mjs",
+      "passed": true
+    },
+    {
+      "name": "Regression unchanged apart from version/path: browser.mjs",
+      "passed": true
+    },
+    {
+      "name": "Regression unchanged apart from version/path: field-limits.mjs",
+      "passed": true
+    },
+    {
+      "name": "Regression unchanged apart from version/path: run.mjs",
+      "passed": true
+    },
+    {
+      "name": "Regression unchanged apart from version/path: scene-boundary.mjs",
+      "passed": true
+    },
+    {
+      "name": "Regression unchanged apart from version/path: authority-routing.mjs",
+      "passed": true
+    },
+    {
+      "name": "Regression unchanged apart from version/path: audit.mjs",
+      "passed": true
+    },
+    {
+      "name": "Regression unchanged apart from version/path: initialization.mjs",
+      "passed": true
+    },
+    {
+      "name": "Agent prompt/settings unchanged except release label",
+      "passed": true
+    },
+    {
+      "name": "Native identity, host contract, permissions and entrypoints unchanged",
+      "passed": true
+    }
+  ]
+}

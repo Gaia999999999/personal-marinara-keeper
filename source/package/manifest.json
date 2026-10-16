@@ -9,9 +9,9 @@
     "engineCommit": "c56501495a8baf76c258e76534c8728a9b7859bb"
   },
   "id": "personal-character-memory-v4-1",
-  "name": "Personal Keeper v4.1.6 — Retention and Budget Repair",
-  "version": "4.1.6",
-  "description": "Durable custody and conditional-plan guidance, budget visibility and compact new provenance. Preserves existing checkpoints and validation.",
+  "name": "Personal Keeper v4.1.7 — Authority Routing Repair",
+  "version": "4.1.7",
+  "description": "Explicit current-evidence authority routing, complete correction examples and actionable rejection diagnostics. Validation unchanged.",
   "engine": {
     "min": "2.5.0",
     "maxExclusive": "2.5.1"
@@ -27,12 +27,12 @@
   "files": [
     {
       "path": "agents.json",
-      "sha256": "bbadca2626cf5362006d2107f9dd37dc3990266e5d4b32f3c8a680b59f1672c7",
-      "bytes": 20401
+      "sha256": "9f20de75bbbdf01c9d44bce67c7d0de3255d6bdbb327c5ae0e5b996202d63df9",
+      "bytes": 25421
     },
     {
       "path": "client.js",
-      "sha256": "d3cedfd4a39287e9c872d1ab36282ca9e8672f0107cb24682197e81e0be1673c",
+      "sha256": "a8f2a82ce47f94c5e2b8a70fcc7aad177649145557b47a32d4859e52f40f9bb8",
       "bytes": 8523
     },
     {
@@ -52,8 +52,8 @@
     },
     {
       "path": "server.mjs",
-      "sha256": "c084b9e49f1f5303384efee1ce77f9ae1a3347833553f8c4c9d4df645edb721f",
-      "bytes": 5739
+      "sha256": "40ddad501295f589c85f073f1ff4b3d8fb2d3b80d11eab16ed0230b1bee1ec8b",
+      "bytes": 6311
     },
     {
       "path": "sources.mjs",
@@ -62,8 +62,8 @@
     },
     {
       "path": "transaction.mjs",
-      "sha256": "3e526abdfc17f41e2b01238c376d60996834c7736acaee6333e776f623c9be69",
-      "bytes": 11664
+      "sha256": "08f29fb3ff4a36bfbda710e09aa579ddbb28e0908ae6b6cc01226e4b79655af5",
+      "bytes": 12419
     },
     {
       "path": "scene-boundary.mjs",

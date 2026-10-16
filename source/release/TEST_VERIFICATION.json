@@ -1,17 +1,21 @@
 {
-  "version": "4.1.6",
+  "version": "4.1.7-rc.1",
+  "candidateOnly": true,
   "allPassed": true,
-  "tests": 109,
-  "passed": 109,
+  "tests": 118,
+  "passed": 118,
   "failed": 0,
-  "retainedRegressions": 96,
-  "newTests": 13,
-  "unchangedFrom415Modules": [
+  "retainedRegressions": 109,
+  "promotedReviewCases": 5,
+  "additionalFocusedCases": 4,
+  "unchangedFrom416Modules": [
     "keeper-core.mjs",
     "legacy-v4.mjs",
+    "sources.mjs",
     "evidence.mjs",
-    "transaction.mjs",
-    "scene-boundary.mjs"
+    "scene-boundary.mjs",
+    "retention.mjs"
   ],
-  "scope": "Local synthetic regression tests. No paid provider calls, installed-browser check, semantic completeness guarantee or latency/cost benchmark."
+  "transactionChange": "Rejection diagnostic text only; eligibility and acceptance logic unchanged.",
+  "scope": "Local runtime and authored-example checks. No paid model, installed-host or model-compliance pass."
 }

@@ -1,0 +1,67 @@
+{
+  "cases": 10,
+  "allPassed": true,
+  "results": [
+    {
+      "name": "OOC restoration with self rejects",
+      "accepted": false,
+      "identicalStateOrRejection": true,
+      "baselineAndProposalUnchanged": true
+    },
+    {
+      "name": "explicit author restoration accepts",
+      "accepted": true,
+      "identicalStateOrRejection": true,
+      "baselineAndProposalUnchanged": true
+    },
+    {
+      "name": "current in-world self remains valid",
+      "accepted": true,
+      "identicalStateOrRejection": true,
+      "baselineAndProposalUnchanged": true
+    },
+    {
+      "name": "ordinary roleplay cannot authorize author correction",
+      "accepted": false,
+      "identicalStateOrRejection": true,
+      "baselineAndProposalUnchanged": true
+    },
+    {
+      "name": "mixed current author and genuine scene self selects eligible scene",
+      "accepted": true,
+      "identicalStateOrRejection": true,
+      "baselineAndProposalUnchanged": true
+    },
+    {
+      "name": "extra invalid ID rejects",
+      "accepted": false,
+      "identicalStateOrRejection": true,
+      "baselineAndProposalUnchanged": true
+    },
+    {
+      "name": "evidence count remains bounded at six",
+      "accepted": false,
+      "identicalStateOrRejection": true,
+      "baselineAndProposalUnchanged": true
+    },
+    {
+      "name": "foreground hard bound remains 240",
+      "accepted": false,
+      "identicalStateOrRejection": true,
+      "baselineAndProposalUnchanged": true
+    },
+    {
+      "name": "missing recipient rejects",
+      "accepted": false,
+      "identicalStateOrRejection": true,
+      "baselineAndProposalUnchanged": true
+    },
+    {
+      "name": "wrong-kind canon access rejects",
+      "accepted": false,
+      "identicalStateOrRejection": true,
+      "baselineAndProposalUnchanged": true
+    }
+  ],
+  "scope": "Synthetic differential checks; no model compliance or arbitrary-text semantic proof."
+}

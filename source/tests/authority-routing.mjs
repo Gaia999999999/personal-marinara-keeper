@@ -71,16 +71,75 @@ test('diagnostic distinguishes stale author evidence from current ordinary rolep
 });
 
 import {readFileSync} from 'node:fs';
-test('complete shipped correction example validates against its declared split author spans',async()=>{
- const prompt=readFileSync(new URL('../Keeper_Prompt_v4.1.7-rc.1.txt',import.meta.url),'utf8');
+async function shippedExample(){
+ const prompt=readFileSync(new URL('../Keeper_Prompt_v4.1.7-rc.2.txt',import.meta.url),'utf8');
  const section=prompt.split('COMPLETE AUTHOR CORRECTION EXAMPLE')[1].split('INITIALIZATION AND AUDIENCE EXAMPLES')[0];
- const declared=[...section.matchAll(/^(E6[1-4]): "([^\n]+)"$/gm)].map(m=>({id:m[1],text:m[2]}));assert.equal(declared.length,4);assert(declared.every(x=>x.text.length<=190));
- assert(declared[0].text.endsWith('Alex'));assert(declared[1].text.startsWith('knows from doing it'));assert(declared[3].text.includes('only to Alex and Bea'));
- const f=await fixture('<ooc>'+declared.map(x=>x.text).join(' ')+'</ooc>');
- const origin=f.p.sources.find(s=>s.kind==='author'&&s.current).origin;
- // This validates the exact documented symbolic example, not a model output.
- const p={...f.p,sources:declared.map(s=>({...s,kind:'author',current:true,origin}))};
- const t=JSON.parse(section.split('\n').find(line=>line.startsWith('{"turn"')));t.turn=p.turn;
- const s=commitTransaction(t,p);oldMemoryUnchanged(s,f.b);assert.deepEqual(s.ledger.at(-1).holders.map(h=>h.who),['alex']);assert.deepEqual(s.plans.at(-1).known_by,['alex','bea']);assert.equal(s.plans.at(-1).status,'proposed');
- assert.deepEqual(t.access[0].evidence,['E61','E62']);assert.deepEqual(t.changes[1].evidence,['E63','E64']);
+ const source=section.match(/^Example source: (.+)$/m)?.[1];assert(source,'Exact single source message must be documented.');
+ const declared=[...section.matchAll(/^(E6[1-3]): "([^\n]+)"$/gm)].map(m=>({id:m[1],text:m[2]}));assert.equal(declared.length,3);
+ const f=await fixture(source),actual=f.p.sources.filter(s=>s.current&&s.kind==='author');
+ // The real prepareContext output is never replaced or relabeled. Only symbolic
+ // prompt references and the turn placeholder are resolved to this preparation.
+ assert.deepEqual(actual.map(s=>s.text),declared.map(s=>s.text));
+ assert.equal(new Set(actual.map(s=>s.origin)).size,1);assert(actual.every(s=>s.text.length<=190));
+ const ids=new Map(declared.map((s,i)=>[s.id,actual[i].id]));
+ const t=JSON.parse(section.split('\n').find(line=>line.startsWith('{"turn"')));t.turn=f.p.turn;
+ for(const group of ['changes','access'])for(const row of t[group])row.evidence=row.evidence.map(id=>{assert(ids.has(id));return ids.get(id);});
+ return {...f,t,declared,actual,section};
+}
+test('shipped correction spans equal real chunker output from one current OOC source',async()=>{
+ const f=await shippedExample();assert.deepEqual(f.actual.map(s=>s.text.length),[186,187,95]);
+ assert(f.actual[0].text.endsWith('grant nobody else'));assert(f.actual[1].text.startsWith('access.'));
+ assert(f.actual[1].text.includes("Restore Alex's private talk proposal"));assert(f.actual[2].text.startsWith('only to Alex and Bea.'));
+});
+test('complete shipped correction shares the real middle chunk and preserves old memory and scope',async()=>{
+ const f=await shippedExample(),sources=JSON.stringify(f.p.sources),baseline=JSON.stringify(f.b),middle=f.actual[1].id;
+ const custody=f.t.changes[0].evidence,plan=f.t.changes[1].evidence,access=f.t.access[0].evidence;
+ assert.deepEqual(custody,[f.actual[0].id,middle]);assert.deepEqual(access,custody);assert.deepEqual(plan,[middle,f.actual[2].id]);
+ const r=await finalize(f);assert.equal(r.success,true,r.error);const s=JSON.parse(r.data.text);oldMemoryUnchanged(s,f.b);
+ assert.deepEqual(s.ledger.at(-1).holders.map(h=>h.who),['alex']);assert.deepEqual(s.plans.at(-1).known_by,['alex','bea']);assert.equal(s.plans.at(-1).status,'proposed');
+ assert.equal(s.plans.at(-1).when,'After finding Riley, only if safe, while Clara helps Riley.');assert.equal(s.plans.at(-1).where,null);
+ assert.equal(JSON.stringify(f.p.sources),sources);assert.equal(JSON.stringify(f.b),baseline);
+});
+test('audit F6: stale-only access rejects atomically before the optional cited breakdown',async()=>{
+ const f=await fixture(),stale=f.p.sources.find(s=>!s.current&&s.kind==='assistant');assert(stale);f.t.access[0].evidence=[stale.id];
+ const before=JSON.stringify(f.b),tx=JSON.stringify(f.t),r=await finalize(f);assert.equal(r.success,false);assert.match(r.error,/a new knowledge route needs current evidence/);assert(!r.error.includes('Cited:'));
+ assert.equal(r.data.keeperStatus,undefined);assert.equal(JSON.stringify(f.b),before);assert.equal(JSON.stringify(f.t),tx);
+});
+test('audit F7: mixed stale scene and current author remain rejected with a conditional hint',async()=>{
+ const f=await fixture(),stale=f.p.sources.find(s=>!s.current&&s.kind==='assistant');assert(stale);
+ f.t.access[0].evidence=[stale.id,f.ids[0]];const tx=JSON.stringify(f.t),r=await finalize(f);assert.equal(r.success,false);
+ assert(r.error.includes(`${stale.id}=stale assistant`));assert(r.error.includes(`${f.ids[0]}=current author`));
+ assert.match(r.error,/For an explicit OOC repair/);assert.match(r.error,/Otherwise omit unsupported access/);assert.match(r.error,/Routes are not converted automatically/);assert.equal(JSON.stringify(f.t),tx);
+});
+test('audit F7: current card alone cannot supply an in-world route or receive the author-repair hint',async()=>{
+ const f=await fixture(),ctx={...f.ctx,characters:[{name:'Sample',description:'Adult cast at a workshop.'}]};
+ const p=await runtime.prepareContext({agent,context:ctx}),card=p.sources.find(s=>s.current&&s.kind==='card');assert(card);f.p=p;f.ctx=ctx;f.t.turn=p.turn;
+ const currentAuthor=p.sources.filter(s=>s.current&&s.kind==='author').map(s=>s.id);for(const row of f.t.changes)row.evidence=currentAuthor;
+ f.t.access[0].evidence=[card.id];const before=JSON.stringify(f.b),r=await finalize(f);assert.equal(r.success,false);assert(r.error.includes(`${card.id}=current card`));
+ assert.match(r.error,/Select current evidence eligible for this route/);assert(!r.error.includes('For an explicit OOC repair'));assert.equal(JSON.stringify(f.b),before);
+});
+test('audit hints and baseline aliases cannot become access or ordinary change evidence',async()=>{
+ const f=await fixture(),before=JSON.stringify(f.b),sources=JSON.stringify(f.p.sources);
+ for(const id of ['authority_reminder','scene_boundary','retention_review','budget',f.p.anchor.reply_ref,'B1'])for(const group of ['access','changes']){
+  const t=structuredClone(f.t);t.access[0].route='author_correction';t[group][0].evidence=[id];
+  const r=await finalize(f,t);assert.equal(r.success,false);assert.match(r.error,/unknown or wrong-scope evidence/);assert.equal(r.data.keeperStatus,undefined);
+ }
+ assert.equal(JSON.stringify(f.b),before);assert.equal(JSON.stringify(f.p.sources),sources);
+});
+test('audit stale author plus current ordinary roleplay cannot authorize correction in either order',async()=>{
+ const f=await fixture();f.t.access[0].route='author_correction';const b=commitTransaction(f.t,f.p);
+ const ctx={...f.ctx,recentMessages:[...f.ctx.recentMessages,{id:'a2',role:'assistant',content:f.ctx.mainResponse},{id:'u3',role:'user',content:'I tighten the kit straps myself.'}],mainResponse:'Bea watches Alex tighten the kit straps.',loadPreviousOutput:async()=>b};
+ const p=await runtime.prepareContext({agent,context:ctx}),stale=p.sources.find(s=>s.kind==='author'&&!s.current),current=p.sources.find(s=>s.kind==='user'&&s.current);assert(stale&&current);
+ const before=JSON.stringify(b);
+ for(const evidence of [[stale.id,current.id],[current.id,stale.id]]){
+  const t={turn:p.turn,through:'Alex adjusts the straps.',scene:null,changes:[{op:'correct',ref:'ledger:strap_test',data:{kind:'event',fact:'Alex tightens the kit straps.',truth:'established'},evidence}],access:[],complete:true};
+  assert.throws(()=>commitTransaction(t,p),/correction needs current explicit OOC/);
+  t.changes[0].op='set';t.access=[{ref:'ledger:strap_test',who:['alex'],stance:'knows',route:'author_correction',from:null,evidence}];assert.throws(()=>commitTransaction(t,p),/needs current explicit OOC/);
+ }
+ assert.equal(JSON.stringify(b),before);
+});
+test('audit valid current personal action remains self when unrelated current author guidance is also cited',async()=>{
+ const f=await fixture('<ooc>Keep replies concise.</ooc> I tighten the kit straps myself.','Bea watches Alex tighten the kit straps.'),current=f.p.sources.find(s=>s.current&&s.kind==='user');assert(current);
+ const evidence=[f.ids[0],current.id],t={turn:f.p.turn,through:'Alex tightens the kit straps.',scene:null,changes:[{op:'set',ref:'ledger:strap_action',data:{kind:'event',fact:'Alex tightens the kit straps.',truth:'established'},evidence}],access:[{ref:'ledger:strap_action',who:['alex'],stance:'knows',route:'self',from:null,evidence}],complete:true};
+ const r=await finalize(f,t);assert.equal(r.success,true,r.error);const s=JSON.parse(r.data.text);oldMemoryUnchanged(s,f.b);assert.match(s.ledger.at(-1).holders[0].via,/^self /);assert.deepEqual(s.ledger.at(-1).holders.map(h=>h.who),['alex']);
 });

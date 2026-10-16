@@ -1,21 +1,26 @@
 {
-  "version": "4.1.7-rc.1",
+  "version": "4.1.7-rc.2",
   "candidateOnly": true,
   "allPassed": true,
-  "tests": 118,
-  "passed": 118,
+  "tests": 125,
+  "passed": 125,
   "failed": 0,
-  "retainedRegressions": 109,
-  "promotedReviewCases": 5,
-  "additionalFocusedCases": 4,
-  "unchangedFrom416Modules": [
+  "previousSuite": 118,
+  "retainedUnchangedTests": 117,
+  "replacedSymbolicExampleTest": 1,
+  "realChunkerExampleTests": 2,
+  "additionalAuditControlTests": 6,
+  "unchangedFromRc1Modules": [
     "keeper-core.mjs",
     "legacy-v4.mjs",
     "sources.mjs",
     "evidence.mjs",
     "scene-boundary.mjs",
-    "retention.mjs"
+    "retention.mjs",
+    "transaction.mjs"
   ],
-  "transactionChange": "Rejection diagnostic text only; eligibility and acceptance logic unchanged.",
-  "scope": "Local runtime and authored-example checks. No paid model, installed-host or model-compliance pass."
+  "serverAndClientChangesFromRc1": "Version/protocol strings only; authority reminder unchanged.",
+  "validationLogicChanged": false,
+  "knownSemanticAcceptanceGapsResolved": false,
+  "scope": "Deterministic controls and real-source prompt-example tests; no model compliance, provider call or installed-host pass."
 }

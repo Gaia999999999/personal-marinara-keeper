@@ -1,13 +1,13 @@
-# Keeper 4.1.7-rc.1 — audit candidate
+# Keeper 4.1.7-rc.2 — focused audit follow-up
 
-**Read-only candidate review; not the live release.** Main remains on Keeper 4.1.6. Do not install or run a paid test before the audit is reviewed.
+**Read-only candidate; not the stable release.** Main remains 4.1.6. No installation or paid call is authorized.
 
-This branch contains a narrow follow-up: explicit current-evidence authority routing, a complete paired correction example with split scope clauses, a read-only model reminder, and clearer rejection diagnostics. No route coercion or validation relaxation. Personal RP and World State are unchanged.
+This follow-up closes the audited prompt-example/test gap: the complete correction now uses actual chunks from one OOC source and deliberately shares the boundary chunk between both records. The regression uses real prepareContext output, not a replacement evidence catalog. Seven core modules, including transaction.mjs, are byte-identical to rc.1; all authority/acceptance/atomicity/audience predicates and limits remain unchanged. Personal RP and World State were not edited.
 
-Baseline: `fb6ad3adf400f77c0cb05de4e9a1d163a0c68a16` (4.1.6). Candidate: `4.1.7-rc.1`, same native identity/schema and reviewed Marinara 2.5.0/c565014 target.
+**125 runtime tests, 22 packaging checks and ten differential scenarios across three versions pass.** A real-pipeline comparison reproduces rc.1's mismatch and confirms rc.2. These checks do not establish live model compliance or semantic entailment. Reproduced inherited semantic acceptance gaps remain explicit review limitations.
 
-**118 runtime tests, 22 packaging checks and 10 differential cases pass.** The original invalid authority/route combination continues to reject. Deterministic checks and authored examples do not establish model compliance or arbitrary-text entailment. The private actual-failure replay is supplied separately; no private chat/state is published here.
+Reviewed rc.1: `fda570f6107251e8f630e0aa0cf142715b565f0a`. Stable 4.1.6: `fb6ad3adf400f77c0cb05de4e9a1d163a0c68a16`. Both remain unchanged.
 
-Download [Keeper_4.1.7-rc.1_Audit_Source.zip](Keeper_4.1.7-rc.1_Audit_Source.zip) for portable candidate and baseline source, tests, runtime ZIPs, focused diff and comparison script. Audit source ZIP: 269817 bytes; SHA-256 `a98afa5f6847c5e41be1470b857ac493be6ad5e25fbbba6051108b92415e3332`. Its internal manifest verifies every included file.
+[Keeper_4.1.7-rc.2_Audit_Source.zip](Keeper_4.1.7-rc.2_Audit_Source.zip) contains all three source/runtime versions, regressions, focused diff and comparison scripts. Bytes: 402626; SHA-256 `61f498efa6548629a82f740288575f0deafe16e908b7aae9ef485048904ecdaa`. See [AUTHORITY_ROUTE_CANDIDATE.md](AUTHORITY_ROUTE_CANDIDATE.md) for commands, limits and the narrow recheck scope.
 
-See [AUTHORITY_ROUTE_CANDIDATE.md](AUTHORITY_ROUTE_CANDIDATE.md) for scope and commands. The catalog in this candidate branch points only to the candidate branch. The main catalog and all earlier release archives remain unchanged. No automatic update, paid call or user-host change is made by this publication.
+Private user material is supplied separately and is excluded from this repository. The next gate is a focused read-only recheck, followed by the lead's disposition; the main catalog is unchanged.

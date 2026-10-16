@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-16T00:07:56.383106Z",
+  "generatedAt": "2026-10-16T05:46:37.021720Z",
   "packages": [
     {
       "manifest": {
@@ -14,8 +14,8 @@
           "engineCommit": "c56501495a8baf76c258e76534c8728a9b7859bb"
         },
         "id": "personal-character-memory-v4-1",
-        "name": "Personal Keeper v4.1.7-rc.1 — Authority Route Audit Candidate",
-        "version": "4.1.7-rc.1",
+        "name": "Personal Keeper v4.1.7-rc.2 — Authority Route Audit Candidate",
+        "version": "4.1.7-rc.2",
         "description": "Audit candidate: explicit current-evidence authority routing, complete correction examples and actionable rejection diagnostics. Validation unchanged.",
         "engine": {
           "min": "2.5.0",
@@ -32,12 +32,12 @@
         "files": [
           {
             "path": "agents.json",
-            "sha256": "4e6fed24035f5feca71bab8c0ccdd8ae993ce368417cc62cd152df4592d910fc",
-            "bytes": 24505
+            "sha256": "57e952eb089a97fd8939a342d61760f131e3b9e7eed33b272a8ebea361d207d4",
+            "bytes": 25448
           },
           {
             "path": "client.js",
-            "sha256": "9fe1f9899ad0f200b075d2ead67ddfcc3a16d1bb9b90bf26ca67387ccb492f54",
+            "sha256": "f47feb95b86d80b28167232f05d753b877049cb4e66ebe5a5d0de53fbb038371",
             "bytes": 8558
           },
           {
@@ -57,7 +57,7 @@
           },
           {
             "path": "server.mjs",
-            "sha256": "bb42be608c4459045dbf9676d108d961acafee9a8318b1ec832d04d7867143fc",
+            "sha256": "af17abc523d978ae9267e30ba3b400e31c1a61df1b1a7a481cb88a10e851a1d7",
             "bytes": 6329
           },
           {
@@ -95,14 +95,14 @@
       },
       "category": "tracker",
       "artifact": {
-        "url": "https://raw.githubusercontent.com/Gaia999999999/personal-marinara-keeper/candidate/keeper-4.1.7-rc.1/personal-character-memory-v4-1-4.1.7-rc.1.zip",
-        "sha256": "0bc7de216417d219367f071d0480429adbcad2ee03af516fb85ec011d4e96699",
-        "bytes": 39421
+        "url": "https://raw.githubusercontent.com/Gaia999999999/personal-marinara-keeper/candidate/keeper-4.1.7-rc.2/personal-character-memory-v4-1-4.1.7-rc.2.zip",
+        "sha256": "ba2acaaf769a62a6dfe78ba660ac0dd6dc3fa156836eb1d32bc4cbf148c92f5c",
+        "bytes": 39610
       }
     }
   ],
   "provenance": {
     "kind": "custom",
-    "url": "https://raw.githubusercontent.com/Gaia999999999/personal-marinara-keeper/candidate/keeper-4.1.7-rc.1/catalog.json"
+    "url": "https://raw.githubusercontent.com/Gaia999999999/personal-marinara-keeper/candidate/keeper-4.1.7-rc.2/catalog.json"
   }
 }

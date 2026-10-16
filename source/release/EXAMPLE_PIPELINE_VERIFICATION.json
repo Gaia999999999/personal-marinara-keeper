@@ -1,0 +1,32 @@
+{
+  "allExpectedResultsObserved": true,
+  "results": [
+    {
+      "version": "4.1.7-rc.1",
+      "declaredCount": 4,
+      "realCount": 3,
+      "realLengths": [
+        186,
+        186,
+        101
+      ],
+      "declaredSpansMatchRealPipeline": false,
+      "sharedCustodyAndPlanIds": []
+    },
+    {
+      "version": "4.1.7-rc.2",
+      "declaredCount": 3,
+      "realCount": 3,
+      "realLengths": [
+        186,
+        187,
+        95
+      ],
+      "declaredSpansMatchRealPipeline": true,
+      "sharedCustodyAndPlanIds": [
+        "E62"
+      ]
+    }
+  ],
+  "scope": "rc.1 symbolic example mismatch reproduced; rc.2 real-source example and shared span confirmed. No model call."
+}

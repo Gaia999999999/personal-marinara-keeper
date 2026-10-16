@@ -1,5 +1,7 @@
 {
   "cases": 10,
+  "runtimes": 3,
+  "runtimeExecutions": 30,
   "allPassed": true,
   "results": [
     {

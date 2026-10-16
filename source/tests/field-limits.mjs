@@ -76,8 +76,8 @@ test('multiple uncovered replies and unknown saves are not presented as saved',(
  const unknown=deriveStatus({agentType:PACKAGE_ID,lastSuccessfulRun:{messageId:'absent'}},messages);assert.equal(unknown.kind,'unknown');
 });
 test('shipping prompt examples stay below the soft targets and scoped timing guidance is present',()=>{
- const prompt=readFileSync(new URL('../Keeper_Prompt_v4.1.7.txt',import.meta.url),'utf8');
+ const prompt=readFileSync(new URL('../Keeper_Prompt_v4.1.8.txt',import.meta.url),'utf8');
  const example=prompt.match(/Short example: through="([^"]+)" scene="([^"]+)"/);assert(example);assert(example[1].length<=120);assert(example[2].length<=180);
  for(const text of ['actual plan field','only part of the existing audience','separate specific plan/target','HARD maximum of 240 characters','Do not inventory preserved facts'])assert(prompt.includes(text),text);
- assert.equal(VERSION,'4.1.7');
+ assert.equal(VERSION,'4.1.8');
 });

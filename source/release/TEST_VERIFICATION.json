@@ -1,10 +1,11 @@
 {
-  "version": "4.1.7",
+  "version": "4.1.8",
   "allPassed": true,
-  "tests": 125,
-  "passed": 125,
+  "tests": 144,
+  "passed": 144,
   "failed": 0,
-  "auditedSuitePreserved": true,
-  "knownSemanticAcceptanceGapsResolved": false,
-  "scope": "Full deterministic suite on stable package; no installed-host or provider/model execution."
+  "previousTestsRetained": 125,
+  "newTests": 19,
+  "scope": "Deterministic local runtime tests. No installed-host/model or paid execution.",
+  "knownSemanticAcceptanceGapsResolved": false
 }

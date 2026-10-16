@@ -6,8 +6,8 @@ import {sceneBoundary} from './scene-boundary.mjs';
 import {memoryBudget,retentionReview} from './retention.mjs';
 
 export const PACKAGE_ID='personal-character-memory-v4-1';
-export const VERSION='4.1.7';
-const PROTOCOL='keeper-v417-runtime-1';
+export const VERSION='4.1.8';
+const PROTOCOL='keeper-v418-runtime-1';
 export function readSeed(notes){
   const seeds=[...String(notes??'').matchAll(/\[KEEPER_V41_SEED\]([\s\S]*?)\[\/KEEPER_V41_SEED\]/g)];
   if(seeds.length>1)throw Error('Select one audited seed.');
@@ -23,13 +23,13 @@ async function loadBase(agent,context){
 function identity(agent){
   if(agent.type!==PACKAGE_ID||agent.phase!=='post_processing')throw Error('Wrong native agent identity or phase.');
   if(agent.settings?.jsonContextOutput!==false)throw Error('Native keeper requires JSON Context Output OFF.');
-  if(Number(agent.settings?.contextSize)!==24)throw Error('Apply v4.1.7 settings in the Keeper panel, then refresh Marinara. The recovery input pool must be 24 messages.');
+  if(Number(agent.settings?.contextSize)!==24)throw Error('Apply v4.1.8 settings in the Keeper panel, then refresh Marinara. The recovery input pool must be 24 messages.');
   const settings=agent.settings??{};
   if(Object.values(settings.contextSources??{}).some(value=>value===true)||
       ['includePreGenInjections','includeParallelResults','triggerLorebooksForAgentCalls'].some(key=>settings[key]===true)||
       (Array.isArray(settings.enabledTools)&&settings.enabledTools.length)||
       Object.values(settings.customCapabilities??{}).some(value=>value===true)){
-    throw Error('Apply v4.1.7 settings: extra context, abilities and tools must be off for the bounded Keeper input.');
+    throw Error('Apply v4.1.8 settings: extra context, abilities and tools must be off for the bounded Keeper input.');
   }
 }
 function retained(prep){

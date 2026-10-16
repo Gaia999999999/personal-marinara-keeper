@@ -1,0 +1,111 @@
+{
+  "version": "4.1.8",
+  "baseline": "4.1.7",
+  "baselineCommit": "542d5fddeb59a5a37a8aa6e635e7a66450a03901",
+  "allPassed": true,
+  "passed": 23,
+  "checks": [
+    {
+      "name": "keeper-core.mjs byte-identical to stable 4.1.7",
+      "passed": true
+    },
+    {
+      "name": "legacy-v4.mjs byte-identical to stable 4.1.7",
+      "passed": true
+    },
+    {
+      "name": "transaction.mjs byte-identical to stable 4.1.7",
+      "passed": true
+    },
+    {
+      "name": "scene-boundary.mjs byte-identical to stable 4.1.7",
+      "passed": true
+    },
+    {
+      "name": "retention.mjs byte-identical to stable 4.1.7",
+      "passed": true
+    },
+    {
+      "name": "server.mjs changes version/protocol only",
+      "passed": true
+    },
+    {
+      "name": "client.js changes version/protocol only",
+      "passed": true
+    },
+    {
+      "name": "model prompt byte-identical",
+      "passed": true
+    },
+    {
+      "name": "agent defaults and model-facing prompt unchanged",
+      "passed": true
+    },
+    {
+      "name": "native identity, host contract, permissions and entrypoints unchanged",
+      "passed": true
+    },
+    {
+      "name": "prior regression retained: authority-routing.mjs",
+      "passed": true
+    },
+    {
+      "name": "prior regression retained: run.mjs",
+      "passed": true
+    },
+    {
+      "name": "prior regression retained: status.mjs",
+      "passed": true
+    },
+    {
+      "name": "prior regression retained: audit.mjs",
+      "passed": true
+    },
+    {
+      "name": "prior regression retained: scene-boundary.mjs",
+      "passed": true
+    },
+    {
+      "name": "prior regression retained: fixtures.mjs",
+      "passed": true
+    },
+    {
+      "name": "prior regression retained: browser.mjs",
+      "passed": true
+    },
+    {
+      "name": "prior regression retained: field-limits.mjs",
+      "passed": true
+    },
+    {
+      "name": "prior regression retained: initialization.mjs",
+      "passed": true
+    },
+    {
+      "name": "prior regression retained: retention.mjs",
+      "passed": true
+    },
+    {
+      "name": "144 runtime tests including all 125 old tests pass",
+      "passed": true
+    },
+    {
+      "name": "19 compatibility regressions added",
+      "passed": true
+    },
+    {
+      "name": "no regex corruption in runtime or new tests",
+      "passed": true
+    }
+  ],
+  "changedBehaviorModules": [
+    "sources.mjs",
+    "evidence.mjs"
+  ],
+  "transactionValidationChanged": false,
+  "modelPromptChanged": false,
+  "runtimeTests": 144,
+  "newCompatibilityTests": 19,
+  "hardLimitsChanged": false,
+  "rawTransactionObservabilityChanged": false
+}

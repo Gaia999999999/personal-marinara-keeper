@@ -1,4 +1,4 @@
-import {buildSources, hash, narrative, normalize} from './sources.mjs';
+import {anchorMatches, buildSources, hash, narrative, normalize} from './sources.mjs';
 
 export const NORMAL_WINDOW=8;
 export const RECOVERY_WINDOW=24;
@@ -35,17 +35,21 @@ export function prepareEvidence(context,baseline){
   const reply=narrative(context.mainResponse);
   if(!reply)throw Error('No completed assistant reply is available.');
   if(history.at(-1)?.role==='assistant'&&narrative(history.at(-1).content)===reply)history=history.slice(0,-1);
+  const supplied=history.length;
   history=history.slice(-RECOVERY_WINDOW);
-  const current=buildSources({...context,recentMessages:history},RECOVERY_WINDOW);
-  if(baseline?.anchor.turn_key===current.anchor.turn_key)throw Error('This exact user/reply pair is already committed. No catch-up or seed is needed; retry against the host-selected prior message.');
+  const latestUser=history.findLast(m=>m.role==='user');
+  if(baseline && anchorMatches(latestUser,{role:'assistant',content:context.mainResponse},baseline.anchor))throw Error('This exact user/reply pair is already committed. No catch-up or seed is needed; retry against the host-selected prior message.');
   let anchorIndex=-1;
   if(baseline){
     anchorIndex=history.findLastIndex((m,index)=>{
-      if(m.role!=='assistant'||messageRef(m)!==baseline.anchor.reply_ref)return false;
+      if(m.role!=='assistant')return false;
       const user=history.slice(0,index).findLast(row=>row.role==='user');
-      return user&&hash([user.id??null,normalize(user.content),narrative(m.content)])===baseline.anchor.turn_key;
+      return anchorMatches(user,m,baseline.anchor);
     });
-    if(anchorIndex<0)throw Error(`Recovery window exceeded: saved revision ${baseline.revision} is outside the last ${RECOVERY_WINDOW} supplied messages. Stop here; an audited catch-up is required. No memory was replaced.`);
+    if(anchorIndex<0){
+      const bounded=supplied>RECOVERY_WINDOW?` Only the last ${RECOVERY_WINDOW} of ${supplied} supplied history entries were examined.`:'';
+      throw Error(`Saved anchor not found: revision ${baseline.revision} could not be matched to a complete user/reply pair in ${history.length} supplied history entries (maximum ${RECOVERY_WINDOW}).${bounded} The pair may be missing, changed or outside this input; the count alone does not identify the cause. Keep this chat paused for review. No memory was replaced.`);
+    }
   }else if(String(context.chatSummary??'').trim()||history.filter(m=>m.role==='user').length>1){
     throw Error('This is an existing story without an accepted keeper checkpoint. Start the fresh Pinewatch test or use an audited seed.');
   }

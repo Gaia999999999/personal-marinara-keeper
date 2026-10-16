@@ -127,13 +127,13 @@ test('lost anchor blocks rebuilding; recovery includes failed replies beyond nor
   const ctx={...oldContext,recentMessages:history,mainResponse:'The entrance is still clear.'},p=await prep(b,ctx);
   assert.equal(p.recovery.mode,'catch_up');assert.equal(p.recovery.pending_replies,7);assert.ok(p.sources.some(s=>s.text.includes('interval 2')));
   const r=await finalize(p,tx(p),ctx,b);assert.equal(r.success,true,r.error);assert.equal(r.data.keeperStatus.coveredReplies,7);
-  const lost=await prep(b,{...ctx,recentMessages:history.slice(-8)});assert.match(lost.blocked,/Recovery window exceeded/);
+  const lost=await prep(b,{...ctx,recentMessages:history.slice(-8)});assert.match(lost.blocked,/Saved anchor not found: revision 1.*in 8 supplied history entries/);
   const fail=await finalize(lost,{blocked:true},{...ctx,recentMessages:history.slice(-8)},b);assert.equal(fail.success,false);assert.match(fail.error,/revision 1 retained/);
 });
 
 test('repeated assistant wording cannot masquerade as the saved anchor',async()=>{
   const b=baseline(),ctx=context();ctx.recentMessages=[{id:'u-new',role:'user',content:'A different action entirely.'},{id:'a-new',role:'assistant',content:oldContext.mainResponse},ctx.recentMessages.at(-1)];
-  assert.match((await prep(b,ctx)).blocked,/Recovery window exceeded/);
+  assert.match((await prep(b,ctx)).blocked,/Saved anchor not found: revision 1.*in 3 supplied history entries/);
 });
 
 test('manual retry removes the duplicated completed reply from its evidence pool',async()=>{

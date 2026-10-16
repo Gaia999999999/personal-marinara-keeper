@@ -3,18 +3,65 @@ import {createHash} from 'node:crypto';
 export const hash = value => createHash('sha256').update(typeof value === 'string' ? value : JSON.stringify(value)).digest('hex');
 export const normalize = text => String(text ?? '').replace(/\r\n?/g, '\n').trim();
 
-// These blocks are GM/reference material, not evidence of in-world access.
-// An unclosed known block consumes the remainder rather than exposing its text.
-export function narrative(text) {
+const HIDDEN_XML = ['gm_update','gm_notes','agent-context','agent_context','think','thinking'];
+const GM_BLOCK = /\[(gm_update(?:_v\d+)?|gm_notes(?:_v\d+)?)\s*\]([\s\S]*?)(?:\[\/\1\s*\]|$)/gi;
+
+// Keep the exact former representation for verification of accepted checkpoints.
+// It is never used to construct actionable evidence or a new checkpoint anchor.
+function narrative417(text) {
   let value = normalize(text);
-  for (const name of ['gm_update','gm_notes','agent-context','agent_context','think','thinking']) {
+  for (const name of HIDDEN_XML) {
     value = value.replace(new RegExp(`<${name}\\b[^>]*>[\\s\\S]*?(?:<\\/${name}\\s*>|$)`, 'gi'), '');
   }
   return value.trim();
 }
 
+// Both known note representations are reference material, never in-world access.
+// A missing/mismatched closing marker consumes the tail instead of exposing it.
+// Host removal of XML tags collapses 3+ newlines; use that same layout convention.
+export function narrative(text) {
+  return narrative417(text).replace(GM_BLOCK, '').replace(/\n{3,}/g, '\n\n').trim();
+}
+
+// A bounded alternative for old anchors containing GM text after removal of its
+// XML wrapper. Do not strip arbitrary story markup, infer missing text or use tails
+// as a substitute for the complete user/reply pair. Retained state is not migrated.
+function legacyGMRepresentation(text) {
+  const value = normalize(text);
+  if (!/<\/?(?:gm_update|gm_notes)\b[^>]*>/i.test(value)) return null;
+  return narrative417(value.replace(/<\/?(?:gm_update|gm_notes)\b[^>]*>/gi, '')
+    .replace(/\n{3,}/g, '\n\n'));
+}
+
+export function anchorMatches(user, assistant, anchor) {
+  if (user?.role !== 'user' || assistant?.role !== 'assistant' || !anchor) return false;
+  const userText = normalize(user.content);
+  if (`u_${hash(['user',userText]).slice(0,16)}` !== anchor.user_ref ||
+      userText.slice(-320) !== anchor.last_user_tail) return false;
+  const variants = new Set([narrative(assistant.content), narrative417(assistant.content), legacyGMRepresentation(assistant.content)]);
+  for (const replyText of variants) {
+    if (!replyText) continue;
+    if (`a_${hash(['assistant',replyText]).slice(0,16)}` === anchor.reply_ref &&
+        replyText.slice(-480) === anchor.last_reply_tail &&
+        hash([user.id??null,userText,replyText]) === anchor.turn_key) return true;
+  }
+  return false;
+}
+
 function annotations(text) {
-  return [...String(text??'').matchAll(/<(gm_update|gm_notes)\b[^>]*>([\s\S]*?)<\/\1\s*>/gi)].map(m=>m[2].trim()).filter(Boolean).join('\n');
+  const blocks = [];
+  const add = body => {
+    const trimmed = body.trim();
+    const nested = [...trimmed.matchAll(GM_BLOCK)];
+    // The usual XML wrapper contains exactly one sentinel block. Unwrap once;
+    // otherwise retain its entire body as non-actionable reference material.
+    const value = nested.length===1 && nested[0][0]===trimmed ? nested[0][2].trim() : trimmed;
+    if (value) blocks.push(value);
+  };
+  const remaining = normalize(text).replace(/<(gm_update|gm_notes)\b[^>]*>([\s\S]*?)(?:<\/\1\s*>|$)/gi,
+    (_,name,body) => { add(body); return ''; });
+  for (const m of remaining.matchAll(GM_BLOCK)) add(m[2]);
+  return blocks.join('\n');
 }
 
 export function buildSources(context, size = 8) {

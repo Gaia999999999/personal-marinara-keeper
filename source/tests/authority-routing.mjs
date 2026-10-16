@@ -72,7 +72,7 @@ test('diagnostic distinguishes stale author evidence from current ordinary rolep
 
 import {readFileSync} from 'node:fs';
 async function shippedExample(){
- const prompt=readFileSync(new URL('../Keeper_Prompt_v4.1.7.txt',import.meta.url),'utf8');
+ const prompt=readFileSync(new URL('../Keeper_Prompt_v4.1.8.txt',import.meta.url),'utf8');
  const section=prompt.split('COMPLETE AUTHOR CORRECTION EXAMPLE')[1].split('INITIALIZATION AND AUDIENCE EXAMPLES')[0];
  const source=section.match(/^Example source: (.+)$/m)?.[1];assert(source,'Exact single source message must be documented.');
  const declared=[...section.matchAll(/^(E6[1-3]): "([^\n]+)"$/gm)].map(m=>({id:m[1],text:m[2]}));assert.equal(declared.length,3);

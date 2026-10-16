@@ -1,8 +1,8 @@
 [
   {
     "id": "personal-character-memory-v4-1",
-    "name": "Character Memory Keeper v4.1.7 — Native",
-    "description": "Explicit current-evidence authority routing and complete multi-span correction guidance. Existing validation and checkpoints retained.",
+    "name": "Character Memory Keeper v4.1.8 — Native",
+    "description": "Consistent GM-note filtering and exact legacy checkpoint recognition; strict validation and existing memory retained.",
     "author": "Personal configuration",
     "phase": "post_processing",
     "enabledByDefault": false,
@@ -14,7 +14,7 @@
     ],
     "defaultTools": [],
     "defaultSettings": {
-      "author": "Personal configuration — v4.1.7",
+      "author": "Personal configuration — v4.1.8",
       "resultType": "context_injection",
       "jsonContextOutput": false,
       "hideOutput": true,

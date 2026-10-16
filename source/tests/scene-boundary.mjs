@@ -106,7 +106,7 @@ test('a concurrent edit still rejects even with an unchanged ending',async()=>{
 });
 
 test('the shipped contract scopes the host copy and all foreground fields without changing checkpoint schema',()=>{
-  const prompt=readFileSync(new URL('../Keeper_Prompt_v4.1.7.txt',import.meta.url),'utf8'),agentFile=JSON.parse(readFileSync(new URL('../package/agents.json',import.meta.url),'utf8'))[0];
+  const prompt=readFileSync(new URL('../Keeper_Prompt_v4.1.8.txt',import.meta.url),'utf8'),agentFile=JSON.parse(readFileSync(new URL('../package/agents.json',import.meta.url),'utf8'))[0];
   assert.equal(agentFile.defaultPromptTemplate,prompt.trim());
   for(const text of ['NOT additional evidence','through, scene, cast.now, plans and ledger','not a permanent ban on movement','one-time OOC correction','when <=100','all pending user choices'])assert(prompt.includes(text),text);
   assert.equal(baseline().schema,'character_memory.v4.1');

@@ -1,5 +1,6 @@
 import {inspect as inspectV4, unwrap as unwrapV4, refFor, MAX_CHARS} from './legacy-v4.mjs';
 import {hash, proof, sourceNote} from './sources.mjs';
+import {maintainLegacyProvenance} from './provenance.mjs';
 
 export const SCHEMA = 'character_memory.v4.1';
 export const DELTA = 'character_memory.delta.v4.1';
@@ -230,8 +231,9 @@ export function applyDelta(input, prepared) {
   state.changes=[...receipts.values()];
   // Keep completion last even after future schema changes.
   delete state.complete;state.complete=COMPLETE;
-  requireValid(state,base);
-  return state;
+  const maintained=maintainLegacyProvenance(state,base).state;
+  requireValid(maintained,base);
+  return maintained;
 }
 
 export function baselineHash(base) {return hash(base??null);}

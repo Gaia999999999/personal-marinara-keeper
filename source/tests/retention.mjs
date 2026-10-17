@@ -58,10 +58,12 @@ test('source identity is not silently truncated when a supplied bound is too sho
  assert.equal(sourceNote({source:'a_1234567890abcdef.12345678',quote:'Checked excerpt.'}),'a_1234567890abcdef.12345678');
  assert.throws(()=>sourceNote({source:'long_source',quote:'Checked excerpt.'},3),/identity exceeds/);
 });
-test('legacy citation excerpts and all domain records survive a quiet update',async()=>{
+test('recognized legacy suffixes normalize with a receipt while all domain values survive a quiet update',async()=>{
  const b=baseline();b.ledger[0].source='a_1234567890abcdef.12345678: A previous literal excerpt.';
  const p=await prep(b,context()),s=commitTransaction(tx(p),p);
- for(const g of ['cast','relations','ledger','plans','directives'])assert.deepEqual(s[g],b[g]);
+ const expected=structuredClone(b);expected.ledger[0].source='a_1234567890abcdef.12345678';
+ for(const g of ['cast','relations','ledger','plans','directives'])assert.deepEqual(s[g],expected[g]);
+ assert.equal(s.changes.find(x=>x.ref==='ledger:door').evidence,'host:legacy-provenance-v1');assert.equal(inspect(s,b).valid,true);
 });
 test('custody and a conditional private proposal survive three subsequent status changes',async()=>{
  const b=baseline();let ctx=context('I alone secure the blue kit in the rear compartment. I privately propose a talk with Bea after finding Riley, only if safe, while Clara helps Riley.','Bea answers with a joke, without agreeing, then asks Alex to watch the lane. Clara cannot hear their exchange.');

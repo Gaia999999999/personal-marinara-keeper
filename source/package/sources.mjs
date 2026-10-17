@@ -130,7 +130,8 @@ export function proof(evidence, sources, baseline = null) {
 export function sourceNote(evidence, max = 120) {
   // Validation already checked the full current excerpt. Persist its stable
   // content-addressed ID, rather than repeating clipped narration in every
-  // source/basis/via field. Historical notes are not migrated or shortened.
+  // source/basis/via field. This function does not migrate historical notes;
+  // the separate host format-maintenance pass handles exact legacy forms.
   if(typeof evidence.source!=='string'||!evidence.source||evidence.source.length>max)
     throw new Error('Stored evidence identity exceeds its field bound.');
   return evidence.source;

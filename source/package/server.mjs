@@ -4,10 +4,11 @@ import {prepareEvidence} from './evidence.mjs';
 import {commitTransaction,MAX_EVIDENCE_IDS,FOREGROUND_LIMITS} from './transaction.mjs';
 import {sceneBoundary} from './scene-boundary.mjs';
 import {memoryBudget,retentionReview} from './retention.mjs';
+import {provenanceDifference} from './provenance.mjs';
 
 export const PACKAGE_ID='personal-character-memory-v4-1';
-export const VERSION='4.1.8';
-const PROTOCOL='keeper-v418-runtime-1';
+export const VERSION='4.1.9';
+const PROTOCOL='keeper-v419-runtime-1';
 export function readSeed(notes){
   const seeds=[...String(notes??'').matchAll(/\[KEEPER_V41_SEED\]([\s\S]*?)\[\/KEEPER_V41_SEED\]/g)];
   if(seeds.length>1)throw Error('Select one audited seed.');
@@ -23,13 +24,13 @@ async function loadBase(agent,context){
 function identity(agent){
   if(agent.type!==PACKAGE_ID||agent.phase!=='post_processing')throw Error('Wrong native agent identity or phase.');
   if(agent.settings?.jsonContextOutput!==false)throw Error('Native keeper requires JSON Context Output OFF.');
-  if(Number(agent.settings?.contextSize)!==24)throw Error('Apply v4.1.8 settings in the Keeper panel, then refresh Marinara. The recovery input pool must be 24 messages.');
+  if(Number(agent.settings?.contextSize)!==24)throw Error('Apply v4.1.9 settings in the Keeper panel, then refresh Marinara. The recovery input pool must be 24 messages.');
   const settings=agent.settings??{};
   if(Object.values(settings.contextSources??{}).some(value=>value===true)||
       ['includePreGenInjections','includeParallelResults','triggerLorebooksForAgentCalls'].some(key=>settings[key]===true)||
       (Array.isArray(settings.enabledTools)&&settings.enabledTools.length)||
       Object.values(settings.customCapabilities??{}).some(value=>value===true)){
-    throw Error('Apply v4.1.8 settings: extra context, abilities and tools must be off for the bounded Keeper input.');
+    throw Error('Apply v4.1.9 settings: extra context, abilities and tools must be off for the bounded Keeper input.');
   }
 }
 function retained(prep){
@@ -71,8 +72,10 @@ export function makeRuntime(){
         const current=await loadBase(agent,context),evidence=prepareEvidence(context,current.baseline);
         if(baselineHash(current.baseline)!==prep.base_hash||current.origin!==prep.origin||evidence.fingerprint!==prep.fingerprint||evidence.anchor.turn_key!==prep.anchor.turn_key)throw Error('Selected story or baseline changed during generation. Retry this selected reply.');
         const state=commitTransaction(result.data,prep);
+        const maintenance=provenanceDifference(prep.baseline,state);
         return {...result,data:{text:JSON.stringify(state),keeperStatus:{version:VERSION,revision:state.revision,
-          coveredReplies:prep.recovery.pending_replies,mode:prep.recovery.mode,replyRef:state.anchor.reply_ref}}};
+          coveredReplies:prep.recovery.pending_replies,mode:prep.recovery.mode,replyRef:state.anchor.reply_ref,
+          ...(maintenance.fields?{maintenance}:{} )}}};
       }catch(e){return reject(result,prep,e.message);}
     }
   };

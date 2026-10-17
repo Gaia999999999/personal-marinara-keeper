@@ -1,5 +1,6 @@
 import {applyDelta, DELTA, DELTA_COMPLETE, requireValid} from './keeper-core.mjs';
 import {hash} from './sources.mjs';
+import {assertPlanPreservation} from './plan-guards.mjs';
 
 export const MAX_EVIDENCE_IDS=6;
 const object=x=>x!==null&&typeof x==='object'&&!Array.isArray(x);
@@ -160,6 +161,7 @@ export function commitTransaction(input,prep){
   if(delta.access.length>(base?24:80))error('access',`expanded recipients exceed ${base?24:80}; batch only genuine shared routes and avoid repeating unchanged audiences`);
   const state=applyDelta(delta,{...prep,sources:prep.sources.map(s=>({...s,id:citationId(s)}))});
   for(const link of links)state.ledger.find(r=>r.id===link.id).supersedes=link.previous;
+  assertPlanPreservation(tx,base,state);
   requireValid(state,base);
   return state;
 }

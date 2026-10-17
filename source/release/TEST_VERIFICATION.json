@@ -1,11 +1,37 @@
 {
-  "version": "4.1.8",
-  "allPassed": true,
-  "tests": 144,
-  "passed": 144,
-  "failed": 0,
-  "previousTestsRetained": 125,
-  "newTests": 19,
-  "scope": "Deterministic local runtime tests. No installed-host/model or paid execution.",
-  "knownSemanticAcceptanceGapsResolved": false
+  "release": "4.1.9",
+  "implementationBasis": "4.1.9-rc.2",
+  "reviewedArtifactSHA256": "087571219bc9484f2f8cf9dda2ce2ec26fc958af31471feecbe1b3ce0c118369",
+  "reviewedSuite": {
+    "tests": 179,
+    "pass": 179,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "stableSuite": {
+    "tests": 179,
+    "pass": 179,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "extractedSuite": {
+    "tests": 179,
+    "pass": 179,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "packagingChecks": 24,
+  "scopeIntegritySyntaxChecks": 76,
+  "actualExportGroups": 12,
+  "o3DifferentialGroups": 5,
+  "correctionGroups": 8,
+  "artifact": {
+    "name": "personal-character-memory-v4-1-4.1.9.zip",
+    "bytes": 45765,
+    "sha256": "a3184aaa220656fbd3978d808c8a8600306f0ae6acb70a640b4628ec38578ecd"
+  },
+  "limits": "Local verification only. No live call, installation, or change to Pinewatch. All prompt and maintenance logic byte-identical to reviewed rc.2."
 }

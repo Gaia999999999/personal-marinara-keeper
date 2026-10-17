@@ -1,5 +1,6 @@
 // Read-only guidance. Classification and faithful extraction remain model work;
 // none of these hints authorize evidence, rewrite a checkpoint or evict a row.
+import {protectedPlanClauses} from './plan-guards.mjs';
 export const MEMORY_TARGET=16000;
 export const MEMORY_MAX=22000;
 export const ROW_LIMITS=Object.freeze({cast:12,relations:30,ledger:36,plans:20,directives:24});
@@ -19,6 +20,9 @@ export function retentionReview(baseline){
     transient_fields:['coverage.through','scene','cast.now','relations.stance','anchor'],
     prior_now_refs:(baseline?.cast??[]).filter(row=>row.now!==null).map(row=>`cast:${row.id}`),
     unresolved_plan_refs:(baseline?.plans??[]).filter(row=>OPEN.has(row.status)).map(row=>`plans:${row.id}`),
-    instruction:'Before replacing a transient field, check its old text for still-current custody, obligations or conditions. Give them a supported ledger/plan home first, or retain the detail in that field. Do not invent current evidence to promote an older detail. New conditional intentions belong in plans; repeated banter usually needs no new ledger row. These references are review aids, not evidence IDs.'
+    protected_plan_clauses:(baseline?.plans??[]).map(plan=>({ref:`plans:${plan.id}`,clauses:protectedPlanClauses(plan)})).filter(x=>x.clauses.length),
+    ledger_admission:{questions:['Will this matter after this immediate scene step?','Is its useful continuity absent from existing scene/cast/plan/relation memory?','Is current eligible evidence sufficient for the fact and its actual audience?'],
+      examples:'A new consequential injury, custody transfer, irreversible loss, durable hazard or unresolved obligation can deserve durable memory. Routine buckle/unbuckle, testing depth before the next call, and repeated quips usually belong in current scene/cast/plan state. Do not log both an instruction and its routine fulfillment as permanent events by default. Preserve pending obligations until actually fulfilled; tight budget is not authority to omit consequences.'},
+    instruction:'Before replacing a transient field or a plan action/when/where, preserve still-current custody, obligations and downstream conditions. Durable physical route hazards and return/evacuation limitations belong in a separately evidenced ledger reference with actual recipients; they are not just the current tactical leg. Retain exact protected plan clauses in action/when/where until they have a supported reference home with the same audience. A baseline clause or this list is not current evidence. Keep the old action if no supported safe rewrite fits; use scene/cast for the current step. Only genuine current author correction can bypass the conservative clause guard. These are review aids, not evidence IDs. Select consequential memory; do not archive every procedural beat.'
   };
 }

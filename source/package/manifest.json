@@ -9,9 +9,9 @@
     "engineCommit": "c56501495a8baf76c258e76534c8728a9b7859bb"
   },
   "id": "personal-character-memory-v4-1",
-  "name": "Personal Keeper v4.1.9 — Memory Maintenance",
-  "version": "4.1.9",
-  "description": "Audited maintenance: preserve scoped plan conditions, normalize recognized legacy provenance, and reduce unnecessary new memory growth.",
+  "name": "Personal Keeper v4.1.10 — Concise Character Status",
+  "version": "4.1.10",
+  "description": "Concise character-status guidance with unchanged strict limits, retention, evidence, audience and recovery validation.",
   "engine": {
     "min": "2.5.0",
     "maxExclusive": "2.5.1"
@@ -27,13 +27,13 @@
   "files": [
     {
       "path": "agents.json",
-      "sha256": "1f84eb3a217e13fa46af78891b18d822d8d4487ac4a726c71388243c0d0281a6",
-      "bytes": 28822
+      "sha256": "d95d1a46f8eae3f4d053810c797ecb0e1875bf54f6ad6386394c9a446a56c758",
+      "bytes": 30363
     },
     {
       "path": "client.js",
-      "sha256": "258b78d9159c8c034a78cfe746fd04062dc18251f13a0b306f9ae2665d406f7d",
-      "bytes": 8523
+      "sha256": "a486c608868942317e37d115649c07211efcde9bec7f1d3fbc2e3eca525b6aa1",
+      "bytes": 8530
     },
     {
       "path": "evidence.mjs",
@@ -52,8 +52,8 @@
     },
     {
       "path": "server.mjs",
-      "sha256": "9e1b63b1c96515d1b02109874dd9aab2db3fafe887683c617191ee581062fe30",
-      "bytes": 6488
+      "sha256": "8bfd1d2bcc350b6537a7224f531c244d8f77e24ad967bbe08b5dffaca27949f2",
+      "bytes": 6761
     },
     {
       "path": "sources.mjs",

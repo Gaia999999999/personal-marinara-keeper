@@ -10,17 +10,17 @@ OUT.mkdir(exist_ok=True)
 read=lambda path:json.loads(path.read_text())
 digest=lambda raw:hashlib.sha256(raw).hexdigest()
 agent=read(PAYLOAD/'agents.json')[0]
-agent['defaultPromptTemplate']=(ROOT/'Keeper_Prompt_v4.1.9.txt').read_text().strip()
+agent['defaultPromptTemplate']=(ROOT/'Keeper_Prompt_v4.1.10.txt').read_text().strip()
 (PAYLOAD/'agents.json').write_text(json.dumps([agent],ensure_ascii=False,indent=2)+'\n')
 manifest=read(PAYLOAD/'manifest.json')
-manifest.update(name='Personal Keeper v4.1.9 — Memory Maintenance',version='4.1.9',description='Audited maintenance: preserve scoped plan conditions, normalize recognized legacy provenance, and reduce unnecessary new memory growth.',builtAgainst={'engineVersion':'2.5.0','engineCommit':'c56501495a8baf76c258e76534c8728a9b7859bb'},entrypoints={'agents':'agents.json','server':'server.mjs','client':'client.js'},contributions={'slots':['roleplay-tracker','tracker-panel']},permissions=['agent-runtime','ui'])
+manifest.update(name='Personal Keeper v4.1.10 — Concise Character Status',version='4.1.10',description='Concise character-status guidance with unchanged strict limits, retention, evidence, audience and recovery validation.',builtAgainst={'engineVersion':'2.5.0','engineCommit':'c56501495a8baf76c258e76534c8728a9b7859bb'},entrypoints={'agents':'agents.json','server':'server.mjs','client':'client.js'},contributions={'slots':['roleplay-tracker','tracker-panel']},permissions=['agent-runtime','ui'])
 files=['agents.json','client.js','evidence.mjs','keeper-core.mjs','legacy-v4.mjs','server.mjs','sources.mjs','transaction.mjs','scene-boundary.mjs','retention.mjs','provenance.mjs','plan-guards.mjs']
 manifest['files']=[{'path':name,'sha256':digest((PAYLOAD/name).read_bytes()),'bytes':(PAYLOAD/name).stat().st_size} for name in files]
 (PAYLOAD/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n')
-artifact=OUT/'personal-character-memory-v4-1-4.1.9.zip'
+artifact=OUT/'personal-character-memory-v4-1-4.1.10.zip'
 with zipfile.ZipFile(artifact,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as archive:
     for name in ['manifest.json',*files]:
-        info=zipfile.ZipInfo(name,date_time=(2026,10,16,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED;info.external_attr=0o100644<<16
+        info=zipfile.ZipInfo(name,date_time=(2026,10,17,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED;info.external_attr=0o100644<<16
         archive.writestr(info,(PAYLOAD/name).read_bytes())
 base='https://raw.githubusercontent.com/Gaia999999999/personal-marinara-keeper/main/'
 raw=artifact.read_bytes()
@@ -31,7 +31,7 @@ def ck(name,condition):
     checks.append({'name':name,'passed':bool(condition)})
     assert condition,name
 ck('same native package/agent identity',manifest['id']==agent['id']=='personal-character-memory-v4-1')
-ck('explicit stable release version',manifest['version']=='4.1.9')
+ck('explicit stable release version',manifest['version']=='4.1.10')
 ck('pinned host and capability contract',manifest['capabilityApi']=={'major':1,'minor':14} and manifest['engine']=={'min':'2.5.0','maxExclusive':'2.5.1'})
 ck('UI and runtime permissions only',manifest['permissions']==['agent-runtime','ui'])
 ck('one native post-processing agent',agent['phase']=='post_processing' and not agent['enabledByDefault'] and agent['modeAllowlist']==['roleplay'])
@@ -39,7 +39,7 @@ s=agent['defaultSettings']
 ck('24-message supply pool; output cap unchanged',s['contextSize']==24 and s['maxTokens']==8888 and s['runInterval']==1)
 ck('optional context is disabled; host still repeats the assistant response',not any(s['contextSources'].values()) and not s['includePreGenInjections'] and not s['includeParallelResults'] and not s['triggerLorebooksForAgentCalls'] and s['enabledTools']==[])
 ck('text result publication contract',s['jsonContextOutput'] is False and s['injectAsSection'] is True and s['hideOutput'] is True)
-ck('packaged prompt equals reviewed prompt',agent['defaultPromptTemplate']==(ROOT/'Keeper_Prompt_v4.1.9.txt').read_text().strip())
+ck('packaged prompt equals reviewed prompt',agent['defaultPromptTemplate']==(ROOT/'Keeper_Prompt_v4.1.10.txt').read_text().strip())
 with zipfile.ZipFile(artifact) as archive:
     ck('only declared runtime payload is shipped',set(archive.namelist())=={'manifest.json',*files})
     for f in manifest['files']:

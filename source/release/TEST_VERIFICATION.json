@@ -1,37 +1,37 @@
 {
-  "release": "4.1.9",
-  "implementationBasis": "4.1.9-rc.2",
-  "reviewedArtifactSHA256": "087571219bc9484f2f8cf9dda2ce2ec26fc958af31471feecbe1b3ce0c118369",
-  "reviewedSuite": {
+  "release": "4.1.10",
+  "implementationBasis": "Published 4.1.9; guidance-only character-status follow-up",
+  "baselineCommit": "ce1dfb997c354eb596aab58ef584e0a566f19413",
+  "baselineSuite": {
     "tests": 179,
     "pass": 179,
     "fail": 0,
     "cancelled": 0,
     "skipped": 0
   },
-  "stableSuite": {
-    "tests": 179,
-    "pass": 179,
+  "releaseSuite": {
+    "tests": 185,
+    "pass": 185,
     "fail": 0,
     "cancelled": 0,
     "skipped": 0
   },
   "extractedSuite": {
-    "tests": 179,
-    "pass": 179,
+    "tests": 185,
+    "pass": 185,
     "fail": 0,
     "cancelled": 0,
     "skipped": 0
   },
   "packagingChecks": 24,
-  "scopeIntegritySyntaxChecks": 76,
-  "actualExportGroups": 12,
+  "scopeIntegritySyntaxChecks": 92,
+  "currentLiveReplayGroups": 8,
+  "historicalMaintenanceReplayGroups": 12,
   "o3DifferentialGroups": 5,
-  "correctionGroups": 8,
   "artifact": {
-    "name": "personal-character-memory-v4-1-4.1.9.zip",
-    "bytes": 45765,
-    "sha256": "a3184aaa220656fbd3978d808c8a8600306f0ae6acb70a640b4628ec38578ecd"
+    "name": "personal-character-memory-v4-1-4.1.10.zip",
+    "bytes": 46379,
+    "sha256": "1cbd3f9660b7ede7f302ae30c2f43c57c483a704bd58d72661683913a062a529"
   },
-  "limits": "Local verification only. No live call, installation, or change to Pinewatch. All prompt and maintenance logic byte-identical to reviewed rc.2."
+  "limits": "No paid model call or host installation. All enforcement modules unchanged; prompt compliance and future capacity remain live-test questions."
 }

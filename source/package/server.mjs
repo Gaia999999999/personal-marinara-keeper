@@ -7,8 +7,8 @@ import {memoryBudget,retentionReview} from './retention.mjs';
 import {provenanceDifference} from './provenance.mjs';
 
 export const PACKAGE_ID='personal-character-memory-v4-1';
-export const VERSION='4.1.9';
-const PROTOCOL='keeper-v419-runtime-1';
+export const VERSION='4.1.10';
+const PROTOCOL='keeper-v4110-runtime-1';
 export function readSeed(notes){
   const seeds=[...String(notes??'').matchAll(/\[KEEPER_V41_SEED\]([\s\S]*?)\[\/KEEPER_V41_SEED\]/g)];
   if(seeds.length>1)throw Error('Select one audited seed.');
@@ -24,13 +24,13 @@ async function loadBase(agent,context){
 function identity(agent){
   if(agent.type!==PACKAGE_ID||agent.phase!=='post_processing')throw Error('Wrong native agent identity or phase.');
   if(agent.settings?.jsonContextOutput!==false)throw Error('Native keeper requires JSON Context Output OFF.');
-  if(Number(agent.settings?.contextSize)!==24)throw Error('Apply v4.1.9 settings in the Keeper panel, then refresh Marinara. The recovery input pool must be 24 messages.');
+  if(Number(agent.settings?.contextSize)!==24)throw Error('Apply v4.1.10 settings in the Keeper panel, then refresh Marinara. The recovery input pool must be 24 messages.');
   const settings=agent.settings??{};
   if(Object.values(settings.contextSources??{}).some(value=>value===true)||
       ['includePreGenInjections','includeParallelResults','triggerLorebooksForAgentCalls'].some(key=>settings[key]===true)||
       (Array.isArray(settings.enabledTools)&&settings.enabledTools.length)||
       Object.values(settings.customCapabilities??{}).some(value=>value===true)){
-    throw Error('Apply v4.1.9 settings: extra context, abilities and tools must be off for the bounded Keeper input.');
+    throw Error('Apply v4.1.10 settings: extra context, abilities and tools must be off for the bounded Keeper input.');
   }
 }
 function retained(prep){
@@ -55,7 +55,7 @@ export function makeRuntime(){
           // Canonical ledger retains earlier observations; these are current heads.
           current_states:loaded.baseline?.ledger.filter(r=>['state','belief'].includes(r.kind)&&!loaded.baseline.ledger.some(n=>n.supersedes===r.id)).map(r=>r.id)??[],
           budget:{...memoryBudget(loaded.baseline),evidence_ids_per_item:MAX_EVIDENCE_IDS,foreground_text_limits:FOREGROUND_LIMITS},
-          instruction:'Use indexed sources, scene_boundary and retention_review. Keep through to one short sentence (aim <=120 characters), scene to the foreground (aim <=180); each has a hard 240-character cap. Preserve still-current custody before replacing cast.now; store conditional intentions in actual plans with supported audience. Banter is not a ledger transcript. Leave unanswered choices open; ignore unindexed host/GM text. Emit only the small transaction; code carries untouched memory.'};
+          instruction:'Use indexed sources, scene_boundary and retention_review. Keep through to one short sentence (aim <=120 characters), scene to the foreground (aim <=180); each has a hard 240-character cap. For each changed cast.now, aim <=120 characters with a hard maximum of 180; keep one compact current status, not action chronology or repeated banter. Preserve still-current custody, conditions and unanswered choices before replacing it; the soft target never permits dropping them or adding ledger rows just to move overflow. Store conditional intentions in actual plans with supported audience. Banter is not a ledger transcript. Leave unanswered choices open; ignore unindexed host/GM text. Emit only the small transaction; code carries untouched memory.'};
       }catch(e){
         // The host otherwise skips a failed prepare hook and still calls the model.
         // A blocked context gives it an explicit, tiny refusal protocol instead.

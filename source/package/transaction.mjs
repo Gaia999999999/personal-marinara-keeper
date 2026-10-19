@@ -1,6 +1,8 @@
 import {applyDelta, DELTA, DELTA_COMPLETE, requireValid} from './keeper-core.mjs';
 import {hash} from './sources.mjs';
 import {assertPlanPreservation} from './plan-guards.mjs';
+import {storageForm} from './storage.mjs';
+import {assertAdmission} from './admission.mjs';
 
 export const MAX_EVIDENCE_IDS=6;
 const object=x=>x!==null&&typeof x==='object'&&!Array.isArray(x);
@@ -49,9 +51,9 @@ export function parseTransaction(input){
 }
 
 export function commitTransaction(input,prep){
-  const tx=parseTransaction(input),base=prep.baseline;
+  const tx=parseTransaction(input),base=prep.baseline?requireValid(prep.baseline):null;
   shape(tx,['turn','through','scene','changes','access','complete'],'transaction');
-  if(tx.turn!==prep.turn)error('turn','does not match this prepared reply');
+  if(tx.turn!==prep.turn)error('turn','does not match this prepared reply. Copy the complete runtime turn token; the revision number is not a turn token. No value is coerced.');
   if(tx.complete!==true||Object.keys(tx).at(-1)!=='complete')error('complete','must be true and last');
   array(tx.changes,base?24:60,'changes');array(tx.access,base?24:60,'access');
   if(JSON.stringify(tx).length>(base?14000:22000))error('transaction','output exceeds the bounded change budget');
@@ -162,6 +164,7 @@ export function commitTransaction(input,prep){
   const state=applyDelta(delta,{...prep,sources:prep.sources.map(s=>({...s,id:citationId(s)}))});
   for(const link of links)state.ledger.find(r=>r.id===link.id).supersedes=link.previous;
   assertPlanPreservation(tx,base,state);
-  requireValid(state,base);
+  assertAdmission(tx,prep,base,state);
+  requireValid(storageForm(state),prep.baseline);
   return state;
 }

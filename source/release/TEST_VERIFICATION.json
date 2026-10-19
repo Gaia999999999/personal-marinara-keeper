@@ -1,37 +1,41 @@
 {
-  "release": "4.1.10",
-  "implementationBasis": "Published 4.1.9; guidance-only character-status follow-up",
-  "baselineCommit": "ce1dfb997c354eb596aab58ef584e0a566f19413",
-  "baselineSuite": {
-    "tests": 179,
-    "pass": 179,
+  "release": "4.1.11",
+  "implementationBasis": "audited 4.1.11-rc.4 unchanged",
+  "reviewedNativeSHA256": "115604f7f6e583dcc868b02806334178f4be20ec16f4945c71db343758db1cb0",
+  "reviewedSuite": {
+    "tests": 300,
+    "pass": 300,
+    "fail": 0,
+    "skipped": 0
+  },
+  "stableSuite": {
+    "tests": 300,
+    "pass": 300,
     "fail": 0,
     "cancelled": 0,
     "skipped": 0
   },
-  "releaseSuite": {
-    "tests": 185,
-    "pass": 185,
+  "nativeSuite": {
+    "tests": 300,
+    "pass": 300,
     "fail": 0,
     "cancelled": 0,
     "skipped": 0
   },
-  "extractedSuite": {
-    "tests": 185,
-    "pass": 185,
-    "fail": 0,
-    "cancelled": 0,
-    "skipped": 0
-  },
-  "packagingChecks": 24,
-  "scopeIntegritySyntaxChecks": 92,
-  "currentLiveReplayGroups": 8,
-  "historicalMaintenanceReplayGroups": 12,
-  "o3DifferentialGroups": 5,
+  "packagingChecks": 27,
+  "promotionScopeSyntaxChecks": 106,
+  "replayGroupsSourceAndNative": [
+    14,
+    8,
+    8,
+    9
+  ],
+  "argonRc4FullFinalizationCases": 18,
   "artifact": {
-    "name": "personal-character-memory-v4-1-4.1.10.zip",
-    "bytes": 46379,
-    "sha256": "1cbd3f9660b7ede7f302ae30c2f43c57c483a704bd58d72661683913a062a529"
+    "name": "personal-character-memory-v4-1-4.1.11.zip",
+    "bytes": 56048,
+    "sha256": "454357ecdccf56295ca3ea5c88f198e2e5c960c15790015e67064cf793cd8570"
   },
-  "limits": "No paid model call or host installation. All enforcement modules unchanged; prompt compliance and future capacity remain live-test questions."
+  "allPassed": true,
+  "limits": "Offline only; no user install, model call, checkpoint mutation or bounded-campaign claim. Full runtime/prompt instructions unchanged from audited rc.4."
 }

@@ -1,6 +1,7 @@
-import {inspect as inspectV4, unwrap as unwrapV4, refFor, MAX_CHARS} from './legacy-v4.mjs';
+import {inspect as inspectV4, MAX_CHARS} from './legacy-v4.mjs';
 import {hash, proof, sourceNote} from './sources.mjs';
 import {maintainLegacyProvenance} from './provenance.mjs';
+import {unpackCheckpoint,storageForm,storedValue,storedCharacters,ENCODING} from './storage.mjs';
 
 export const SCHEMA = 'character_memory.v4.1';
 export const DELTA = 'character_memory.delta.v4.1';
@@ -23,8 +24,8 @@ export const normalizeWording = text => text.trim().replace(/\s+/gu,' ');
 const record = (state,group,id) => state[group]?.find(r => key(group,r) === id);
 
 export function unwrap(input) {
-  // The legacy unwrap is strict and rejects private/public split payloads.
-  return unwrapV4(input);
+  // Accept legacy native JSON or the strict self-contained canonical encoding.
+  return unpackCheckpoint(input);
 }
 function legacy(state) {
   const {anchor,...rest} = copy(state);
@@ -39,7 +40,12 @@ export function inspect(input, previous = null) {
   try {state=unwrap(input); prior=previous === null ? null : unwrap(previous);}
   catch(e) {return {valid:false,errors:[e.message],warnings:[],metrics:null};}
   if (!plain(state)) return {valid:false,errors:['Checkpoint must be an object.'],warnings:[],metrics:null};
-  const report = inspectV4(legacy(state),prior ? legacy(prior) : null);
+  const wire=storedValue(input),priorWire=previous===null?null:storedValue(previous);
+  // Only a strictly decoded, canonical packed envelope supplies a physical meter.
+  // Every expanded field, row and transition still goes through the old validator.
+  const meter={current:wire?.encoding===ENCODING?storedCharacters(wire):JSON.stringify(legacy(state)).length,
+    previous:priorWire?.encoding===ENCODING?storedCharacters(priorWire):prior?JSON.stringify(legacy(prior)).length:null};
+  const report = inspectV4(legacy(state),prior ? legacy(prior) : null,meter);
   const ledger=Array.isArray(state.ledger)?state.ledger:[];
   const predecessors=new Set();
   for(const row of ledger){
@@ -63,7 +69,7 @@ export function inspect(input, previous = null) {
       !/^[a-f0-9]{64}$/.test(a.turn_key) || !/^u_[a-f0-9]{16}$/.test(a.user_ref) || !/^a_[a-f0-9]{16}$/.test(a.reply_ref) ||
       typeof a.last_user_tail !== 'string' || !a.last_user_tail || a.last_user_tail.length>320 ||
       typeof a.last_reply_tail !== 'string' || !a.last_reply_tail || a.last_reply_tail.length>480) report.errors.push('Invalid host-generated continuation anchor.');
-  const chars=JSON.stringify(state).length;
+  const chars=storedCharacters(input);
   if (chars > MAX_CHARS) report.errors.push(`budget: ${chars} canonical characters exceeds ${MAX_CHARS}, including anchor.`);
   if (report.metrics) report.metrics.canonicalCharacters=chars;
   report.valid=report.errors.length===0;
@@ -232,7 +238,7 @@ export function applyDelta(input, prepared) {
   // Keep completion last even after future schema changes.
   delete state.complete;state.complete=COMPLETE;
   const maintained=maintainLegacyProvenance(state,base).state;
-  requireValid(maintained,base);
+  requireValid(storageForm(maintained),prepared.baseline);
   return maintained;
 }
 

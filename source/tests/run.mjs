@@ -196,6 +196,6 @@ test('successor history cannot be removed or made cyclic in a seed',()=>{
 });
 
 test('bounded compiled sources and stable proposal token contain no duplicate catalog',async()=>{
-  const p=await prep();assert.equal(p.catalog,undefined);assert.match(p.turn,/^[a-f0-9]{16}$/);assert.equal(p.base_hash,baselineHash(p.baseline));
-  assert.equal(p.turn,hash([p.base_hash,p.anchor.turn_key,p.fingerprint]).slice(0,16));
+  const p=await prep();assert.equal(p.catalog,undefined);assert.match(p.turn,/^t_[a-f0-9]{16}$/);assert.equal(p.base_hash,baselineHash(p.baseline));
+  assert.equal(p.turn,'t_'+hash([p.base_hash,p.anchor.turn_key,p.fingerprint]).slice(0,16));
 });

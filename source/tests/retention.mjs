@@ -26,7 +26,7 @@ test('budget reports actual canonical size and existing caps without mutating me
 });
 test('tight budget is visible at the target without authorizing removal or raising caps',()=>{
  const b=baseline();let n=0;
- while(JSON.stringify(b).length<16000)b.ledger.push({id:`reference_${n++}`,kind:'reference',fact:'The service bridge remains open only to pedestrians until the inspector returns with a signed assessment. '.repeat(3),truth:'established',source:'Earlier accepted inspection.',holders:[],not_known_by:[]});
+ while(memoryBudget(b).used<16000)b.ledger.push({id:`reference_${n++}`,kind:'reference',fact:'The service bridge remains open only to pedestrians until the inspector returns with a signed assessment. '.repeat(3),truth:'established',source:'Earlier accepted inspection.',holders:[],not_known_by:[]});
  assert(inspect(b).valid);const x=memoryBudget(b);assert.equal(x.pressure,'tight');assert.equal(x.max,22000);assert.equal(x.row_limits.ledger,36);
 });
 test('fresh initialization has empty retention refs and a full unchanged budget',()=>{

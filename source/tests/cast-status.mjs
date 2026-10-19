@@ -75,7 +75,7 @@ test('a later catch-up covers both replies after rejection and commits once from
 });
 
 test('installed prompt and per-call guidance show the same target and preserve the retention priority',async()=>{
- const prompt=readFileSync(new URL('../Keeper_Prompt_v4.1.10.txt',import.meta.url),'utf8');
+ const prompt=readFileSync(new URL('../Keeper_Prompt_v4.1.11.txt',import.meta.url),'utf8');
  const example=prompt.match(/Short status example: cast.now="([^"]+)"/);assert(example);assert(example[1].length<=120);
  for(const text of ['HARD maximum of 180 characters','Aim <=120 characters','Text of 121–180 characters is allowed','retain it there','two overlong cast entries reject the whole update'])assert(prompt.includes(text),text);
  const p=await prepare();assert.match(p.instruction,/cast.now, aim <=120 characters with a hard maximum of 180/);

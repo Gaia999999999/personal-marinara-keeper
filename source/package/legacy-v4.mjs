@@ -27,7 +27,7 @@ export function unwrap(input) {
   return value;
 }
 
-export function inspect(input, previousInput = null) {
+export function inspect(input, previousInput = null, storageMeter = null) {
   const errors = [], warnings = [];
   let state;
   try { state = unwrap(input); } catch (e) { return {valid:false, errors:[e.message], warnings, metrics:null}; }
@@ -127,13 +127,13 @@ export function inspect(input, previousInput = null) {
     for (const dest of replacements) if (typeof dest !== 'string' || !refs.has(dest)) bad(r.ref,`replacement target not retained: ${JSON.stringify(dest)}`);
     if (new Set(replacements).size !== replacements.length) bad(r.ref,'duplicate replacement');
   }
-  const chars = canonical(state).length;
+  const chars = storageMeter?.current ?? canonical(state).length;
   if (chars > MAX_CHARS) bad('budget',`${chars} canonical characters exceeds ${MAX_CHARS}`);
   else if (chars > SOFT_CHARS) warnings.push(`Above working compact target: ${chars}/${SOFT_CHARS} canonical characters; compress wording, never omit protected records.`);
   const metrics = {canonicalCharacters:chars, valueTextCharacters:textSize(state), counts:Object.fromEntries(Object.keys(CAPS).map(k=>[k,Array.isArray(state[k])?state[k].length:0]))};
   let previous;
   if (previousInput !== null) {
-    const priorReport = inspect(previousInput);
+    const priorReport = inspect(previousInput, null, storageMeter?.previous == null ? null : {current:storageMeter.previous});
     if (!priorReport.valid) bad('baseline',`invalid; cannot certify transition (${priorReport.errors.slice(0,3).join('; ')})`);
     else {
       previous = unwrap(previousInput);

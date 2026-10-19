@@ -9,9 +9,9 @@
     "engineCommit": "c56501495a8baf76c258e76534c8728a9b7859bb"
   },
   "id": "personal-character-memory-v4-1",
-  "name": "Personal Keeper v4.1.10 — Concise Character Status",
-  "version": "4.1.10",
-  "description": "Concise character-status guidance with unchanged strict limits, retention, evidence, audience and recovery validation.",
+  "name": "Personal Keeper v4.1.11 — Lossless Checkpoints and Admission Guards",
+  "version": "4.1.11",
+  "description": "Lossless canonical provenance packing and bounded admission checks; fixed 22000 character and existing row/field caps; no archival or model retirement.",
   "engine": {
     "min": "2.5.0",
     "maxExclusive": "2.5.1"
@@ -27,12 +27,12 @@
   "files": [
     {
       "path": "agents.json",
-      "sha256": "d95d1a46f8eae3f4d053810c797ecb0e1875bf54f6ad6386394c9a446a56c758",
-      "bytes": 30363
+      "sha256": "323e72f5d758c82fefc0242e56bddf8dfa9d96ed3d450a7b834d4553f39c72c2",
+      "bytes": 34157
     },
     {
       "path": "client.js",
-      "sha256": "a486c608868942317e37d115649c07211efcde9bec7f1d3fbc2e3eca525b6aa1",
+      "sha256": "4e90906e026757f48a4be5aa78d6ebce603458f623f173df1643e49a394e4d3d",
       "bytes": 8530
     },
     {
@@ -42,18 +42,18 @@
     },
     {
       "path": "keeper-core.mjs",
-      "sha256": "73b485593b87e4e95fdb57008f7600b9c17bfa09cebc5eb3c0c8c933c36b2f41",
-      "bytes": 18096
+      "sha256": "bd7403205e2cd544c8ca4dbe93d8a3c65827311b0eac27eaf2a6ec290b819441",
+      "bytes": 18690
     },
     {
       "path": "legacy-v4.mjs",
-      "sha256": "f8a15bdae8af9e6fa3f83272df8331fb70945b20cad9adfa6cb2847c4cf7632f",
-      "bytes": 14151
+      "sha256": "09b701aeae912359f3f5bab6ecd1657da2115624d0bdcf634adbd54b3f801dbc",
+      "bytes": 14276
     },
     {
       "path": "server.mjs",
-      "sha256": "8bfd1d2bcc350b6537a7224f531c244d8f77e24ad967bbe08b5dffaca27949f2",
-      "bytes": 6761
+      "sha256": "944e8151595c2fccc56e0ffd087976db5088e21f560cb21f5976a8ec71e9f1a6",
+      "bytes": 8245
     },
     {
       "path": "sources.mjs",
@@ -62,8 +62,8 @@
     },
     {
       "path": "transaction.mjs",
-      "sha256": "00c3fc5d1c534220844a3ef99527437a8ccb6a589b8df306565ebc389b0e832c",
-      "bytes": 12518
+      "sha256": "54b9414166740ff3f4ec880ff8338f96f956ecae892811b0978c1fd45897a96b",
+      "bytes": 12805
     },
     {
       "path": "scene-boundary.mjs",
@@ -72,8 +72,8 @@
     },
     {
       "path": "retention.mjs",
-      "sha256": "d33ffa96054f093e4996fd869f4b1492ed745fdeee451bc795b220fe6b7f3e20",
-      "bytes": 3054
+      "sha256": "62c423b1c20f0f342788a9f57c12d87ee705a80aff2b090e9f1a56b6a05755e3",
+      "bytes": 3298
     },
     {
       "path": "provenance.mjs",
@@ -84,6 +84,16 @@
       "path": "plan-guards.mjs",
       "sha256": "d3dcce879dab7570cca5b34395a97893eba7c7522d4eb0d5042807511ea5f2de",
       "bytes": 3124
+    },
+    {
+      "path": "storage.mjs",
+      "sha256": "08fab3711023ab01f736fa9469a6e17d485916a2e1c00fc322d5000732f517af",
+      "bytes": 4697
+    },
+    {
+      "path": "admission.mjs",
+      "sha256": "f30b648b5ab5206d1ae0be5b91e14b3d4e25fc8189eccff2cc4d9a852f35dc51",
+      "bytes": 13161
     }
   ],
   "permissions": [

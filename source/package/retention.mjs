@@ -1,14 +1,17 @@
 // Read-only guidance. Classification and faithful extraction remain model work;
 // none of these hints authorize evidence, rewrite a checkpoint or evict a row.
 import {protectedPlanClauses} from './plan-guards.mjs';
+import {storageForm,unpackCheckpoint} from './storage.mjs';
 export const MEMORY_TARGET=16000;
 export const MEMORY_MAX=22000;
 export const ROW_LIMITS=Object.freeze({cast:12,relations:30,ledger:36,plans:20,directives:24});
 const OPEN=new Set(['proposed','intended','agreed','in_progress','blocked']);
 
 export function memoryBudget(baseline){
-  const used=baseline?JSON.stringify(baseline).length:0;
-  return {used,target:MEMORY_TARGET,max:MEMORY_MAX,remaining:MEMORY_MAX-used,
+  baseline=baseline?unpackCheckpoint(baseline):null;
+  const logical=baseline?JSON.stringify(baseline).length:0;
+  const used=baseline?JSON.stringify(storageForm(baseline)).length:0;
+  return {used,expanded_characters:logical,lossless_savings:logical-used,target:MEMORY_TARGET,max:MEMORY_MAX,remaining:MEMORY_MAX-used,
     pressure:used>=MEMORY_TARGET?'tight':'normal',
     counts:Object.fromEntries(Object.keys(ROW_LIMITS).map(group=>[group,baseline?.[group]?.length??0])),
     row_limits:{...ROW_LIMITS},

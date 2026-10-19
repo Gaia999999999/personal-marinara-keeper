@@ -1,3 +1,5 @@
+// HISTORICAL v4.1.1 HARNESS, not a candidate gate. Frozen for reference only.
+throw new Error("Historical browser harness: do not execute for the current candidate.");
 import {createServer} from 'node:http';
 import {readFileSync,writeFileSync} from 'node:fs';
 import {pathToFileURL} from 'node:url';

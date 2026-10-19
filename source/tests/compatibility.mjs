@@ -5,6 +5,7 @@ import {makeRuntime,PACKAGE_ID} from '../package/server.mjs';
 import {anchorMatches,buildSources,hash,narrative} from '../package/sources.mjs';
 import {prepareEvidence,RECOVERY_WINDOW} from '../package/evidence.mjs';
 import {inspect} from '../package/keeper-core.mjs';
+import {packCheckpoint,unpackCheckpoint} from '../package/storage.mjs';
 import {formatGenerationParameterError} from './host-error-formatter.mjs';
 
 const prose='Bea checks the gate.\n\n"Hold the latch."';
@@ -168,6 +169,18 @@ test('finalizer rechecks the selected historical pair after preparation',async()
   assert.equal((await finish(changed,b,p)).success,false);
   const altered=structuredClone(b);altered.scene='Changed concurrently.';
   assert.equal((await finish(ctx,altered,p)).success,false);
+});
+
+test('packed checkpoints retain #23 complete-anchor/GM-wrapper compatibility and reject edits',async()=>{
+ const logical=legacy(),b=packCheckpoint(logical),before=JSON.stringify(b);
+ for(const text of [wrapped(),hostStrip(wrapped())]){
+  const ctx=next(text),p=await prep(ctx,b);assert.equal(p.blocked,undefined);
+  const r=await finish(ctx,b,p);assert.equal(r.success,true,r.error);
+  const state=unpackCheckpoint(r.data);assert.deepEqual(domains(state),domains(logical));assert.equal(state.revision,2);
+  assert.match((await prep({...ctx,mainResponse:text,recentMessages:[pairUser]},b)).blocked,/already committed/);
+ }
+ for(const changed of [wrapped().replace('checks the gate','opens the gate'),wrapped('Changed GM note.')])assert.match((await prep(next(changed),b)).blocked,/Saved anchor not found/);
+ assert.equal(JSON.stringify(b),before);
 });
 
 test('GM note text cannot authorize a new ledger fact or access under either representation',async()=>{

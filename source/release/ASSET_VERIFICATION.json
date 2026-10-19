@@ -1,12 +1,16 @@
 {
   "allPassed": true,
-  "passed": 24,
-  "artifact": "personal-character-memory-v4-1-4.1.10.zip",
-  "bytes": 46379,
-  "sha256": "1cbd3f9660b7ede7f302ae30c2f43c57c483a704bd58d72661683913a062a529",
+  "passed": 27,
+  "artifact": "personal-character-memory-v4-1-4.1.11.zip",
+  "bytes": 56048,
+  "sha256": "454357ecdccf56295ca3ea5c88f198e2e5c960c15790015e67064cf793cd8570",
   "checks": [
     {
       "name": "same native package/agent identity",
+      "passed": true
+    },
+    {
+      "name": "matching displayed stable version",
       "passed": true
     },
     {
@@ -91,6 +95,14 @@
     },
     {
       "name": "payload integrity: plan-guards.mjs",
+      "passed": true
+    },
+    {
+      "name": "payload integrity: storage.mjs",
+      "passed": true
+    },
+    {
+      "name": "payload integrity: admission.mjs",
       "passed": true
     },
     {

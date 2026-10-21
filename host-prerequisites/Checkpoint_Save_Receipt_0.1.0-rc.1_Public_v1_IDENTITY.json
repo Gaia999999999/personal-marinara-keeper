@@ -1,0 +1,16 @@
+{
+  "artifact": "Checkpoint_Save_Receipt_0.1.0-rc.1_Public_v1.zip",
+  "bytes": 980357,
+  "sha256": "cbca85affec8840299d6f32c4739197dade7c74e847f7d5753dd1b54a64d64b7",
+  "manifestFiles": 84,
+  "manifestSHA256": "e24762b1ab0dbc56d317c792bae01b451d7fc6df79929fc888d7ef4cf1e184cf",
+  "evidenceFiles": 55,
+  "evidenceFilesRedacted": 41,
+  "implementationChanged": false,
+  "runtimeRegressionsRerun": false,
+  "originalFullAuditSHA256": "68fb6c15d9993d4ba2e6605f546b01a96b280b0d0cd41525272eee8b92db16ac",
+  "originalFullAuditPreserved": true,
+  "originalSourceCheckpointPreserved": true,
+  "sourceReconstructionVerified": true,
+  "status": "Review-only public packaging; independent Argon engineering gate remains pending"
+}
